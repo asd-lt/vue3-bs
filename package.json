@@ -7,6 +7,10 @@
     "files": [
         "dist"
     ],
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    },
     "main": "./dist/vue3-bs.umd.js",
     "module": "./dist/vue3-bs.mjs",
     "exports": {
