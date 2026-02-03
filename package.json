@@ -1,6 +1,6 @@
 {
     "name": "vue3-bs",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "Vue 3 + Bootstrap 5 Component Library",
     "type": "module",
     "sideEffects": false,
@@ -9,7 +9,8 @@
     ],
     "publishConfig": {
         "access": "public",
-        "provenance": true
+        "provenance": true,
+        "registry": "https://registry.npmjs.org/"
     },
     "main": "./dist/vue3-bs.umd.js",
     "module": "./dist/vue3-bs.mjs",
