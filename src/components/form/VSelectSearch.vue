@@ -20,45 +20,48 @@ const nextUrl = ref(null);
 const emit = defineEmits([
     'update:modelValue',
     'select',
+    'change',
 ]);
 
 const fieldError = ref(null);
 const formData = inject('form-data', undefined);
 
-const props = defineProps(baseProps({
-    keyId: {
-        default: 'id',
-        type: [String],
-    },
-    keyName: {
-        default: 'name',
-        type: [String],
-    },
-    url: {
-        default: null,
-        type: [String],
-    },
-    isStatic: {
-        default: false,
-        type: [Boolean],
-    },
-    options: {
-        default: [],
-        type: [Array],
-    },
-    create: {
-        default: false,
-        type: [Boolean, Function],
-    },
-    noSearch: {
-        default: false,
-        type: [Boolean],
-    },
-    multiple: {
-        default: false,
-        type: [Boolean],
-    },
-}));
+const props = defineProps(
+    baseProps({
+        keyId: {
+            default: 'id',
+            type: [String],
+        },
+        keyName: {
+            default: 'name',
+            type: [String],
+        },
+        url: {
+            default: null,
+            type: [String],
+        },
+        isStatic: {
+            default: false,
+            type: [Boolean],
+        },
+        options: {
+            default: [],
+            type: [Array],
+        },
+        create: {
+            default: false,
+            type: [Boolean, Function],
+        },
+        noSearch: {
+            default: false,
+            type: [Boolean],
+        },
+        multiple: {
+            default: false,
+            type: [Boolean],
+        },
+    }),
+);
 
 const {
     parsedId,
@@ -330,18 +333,21 @@ onMounted(() => {
     }
 });
 
-watch(() => fieldValue.value, async(newValue, oldValue) => {
-    if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
-        if (props.multiple) {
-            const ids = Array.isArray(newValue) ? newValue : [];
-            const items = searchResults.value.filter((item) => ids.includes(item[props.keyId]));
-            selectedItem.value = items;
-        } else {
-            selectItem(findItemById(newValue) || {});
+watch(
+    () => fieldValue.value,
+    async (newValue, oldValue) => {
+        if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
+            if (props.multiple) {
+                const ids = Array.isArray(newValue) ? newValue : [];
+                const items = searchResults.value.filter((item) => ids.includes(item[props.keyId]));
+                selectedItem.value = items;
+            } else {
+                selectItem(findItemById(newValue) || {});
+            }
         }
-    }
-}, { immediate: false });
-
+    },
+    { immediate: false },
+);
 </script>
 <template>
     <div

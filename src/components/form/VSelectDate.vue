@@ -12,6 +12,7 @@ const refPlaceholder = ref(false);
 
 const fieldError = ref(null);
 const formData = inject('form-data');
+const emit = defineEmits(['update:modelValue', 'change']);
 
 const props = defineProps(baseProps());
 
@@ -23,7 +24,7 @@ const {
     fieldValue,
     parsedName,
     parsedWrapperClass,
-} = baseComputed(props, formData);
+} = baseComputed(props, formData, emit);
 
 const parsedFieldClass = computed(() => {
     const fieldClass = ['form-select'];

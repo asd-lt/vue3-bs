@@ -7,6 +7,7 @@ import { baseProps, baseComputed } from './base-input';
 
 const fieldError = ref(null);
 const formData = inject('form-data');
+const emit = defineEmits(['update:modelValue', 'change']);
 
 const props = defineProps(baseProps({
     type: String,
@@ -21,7 +22,7 @@ const {
     parsedName,
     parsedWrapperClass,
     parsedAttributes,
-} = baseComputed(props, formData);
+} = baseComputed(props, formData, emit);
 
 const parsedType = computed(() => {
     return props.type || 'text';

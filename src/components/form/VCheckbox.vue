@@ -2,14 +2,17 @@
 import { inject, computed } from 'vue';
 import { baseComputed, baseProps } from './base-input';
 
-const props = defineProps(baseProps({
-    switch: {
-        type: Boolean,
-        default: false,
-    },
-}));
-
 const formData = inject('form-data');
+const emit = defineEmits(['update:modelValue', 'change']);
+
+const props = defineProps(
+    baseProps({
+        switch: {
+            type: Boolean,
+            default: false,
+        },
+    }),
+);
 
 const {
     parsedId,
@@ -17,7 +20,7 @@ const {
     parsedLabel,
     fieldValue,
     parsedName,
-} = baseComputed(props, formData);
+} = baseComputed(props, formData, emit);
 
 const mainClass = computed(() => {
     const parsedMainClass = ['form-check'];

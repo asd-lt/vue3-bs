@@ -10,10 +10,7 @@ const files = ref([]);
 const inputFile = ref(null);
 const formData = inject('form-data');
 const formErrors = inject('form-errors');
-
-const emit = defineEmits([
-    'change',
-]);
+const emit = defineEmits(['update:modelValue', 'change']);
 
 const props = defineProps(baseProps({
     multiple: Boolean,
@@ -27,7 +24,7 @@ const {
     fieldValue,
     parsedName,
     parsedWrapperClass,
-} = baseComputed(props, formData);
+} = baseComputed(props, formData, emit);
 
 onMounted(() => {
     if (Array.isArray(fieldValue.value)) {
@@ -62,7 +59,6 @@ function fileSelected(event) {
         files.value = [];
     }
 
-     
     for (let i = 0; i < event.target.files.length; i++) {
         const file = event.target.files[i];
         file.src = URL.createObjectURL(file);
@@ -84,7 +80,7 @@ function removeFile(index) {
     if (files.value) {
         files.value.splice(index, 1);
         const filesObj = new DataTransfer();
-         
+
         for (let i = 0; i < inputFile.value.files.length; i++) {
             if (i !== index) {
                 filesObj.items.add(inputFile.value.files[i]);
@@ -99,7 +95,6 @@ function removeFile(index) {
         }
     }
 }
-
 </script>
 <template>
     <div :class="parsedWrapperClass">

@@ -20,8 +20,9 @@ Follow these guidelines when analyzing or modifying the codebase.
 
 ### Testing
 
-- **Status**: There are currently **no automated tests** configured in this project.
-- **Action**: When adding critical logic, consider adding a basic test setup or verify manually. Do not attempt to run `npm test` or `npm run test` as they do not exist.
+- **Status**: Unit tests are available using Vitest.
+- **Run Tests**: `docker compose run --rm app npm test`
+- **Action**: When adding critical logic, add unit tests in `src/**/__tests__/*.spec.js`.
 
 ## 2. Code Style & Conventions
 
@@ -46,6 +47,7 @@ _Tip: Run `npm run format` on files you edit to ensure compliance._
 - **Props**: Defined using `defineProps`. Use camelCase for prop names.
 - **Emits**: Defined using `defineEmits`.
 - **Directives**: Use standard Vue directives (`v-if`, `v-for`, `v-model`).
+- **Attributes**: One attribute per line if there is more than one attribute. Single attribute can be on the same line.
 
 ### CSS / Styling
 

@@ -1,25 +1,40 @@
-import js from '@eslint/js'
-import pluginVue from 'eslint-plugin-vue'
-import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
-import globals from 'globals'
+import js from '@eslint/js';
+import pluginVue from 'eslint-plugin-vue';
+import skipFormatting from '@vue/eslint-config-prettier/skip-formatting';
+import globals from 'globals';
 
 export default [
-  {
-    name: 'app/files-to-lint',
-    files: ['**/*.{js,mjs,jsx,vue}'],
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-        axios: 'readonly'
-      }
-    }
-  },
-  {
-    name: 'app/files-to-ignore',
-    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**']
-  },
-  js.configs.recommended,
-  ...pluginVue.configs['flat/essential'],
-  skipFormatting
-]
+    {
+        name: 'app/files-to-lint',
+        files: ['**/*.{js,mjs,jsx,vue}'],
+        languageOptions: {
+            globals: {
+                ...globals.browser,
+                ...globals.node,
+                axios: 'readonly',
+            },
+        },
+    },
+    {
+        name: 'app/files-to-ignore',
+        ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**'],
+    },
+    js.configs.recommended,
+    ...pluginVue.configs['flat/essential'],
+    skipFormatting,
+    {
+        rules: {
+            'vue/max-attributes-per-line': [
+                'error',
+                {
+                    singleline: {
+                        max: 1,
+                    },
+                    multiline: {
+                        max: 1,
+                    },
+                },
+            ],
+        },
+    },
+];
