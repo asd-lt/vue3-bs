@@ -1,85 +1,75 @@
 # vue3-bs
 
-Vue 3 + Bootstrap 5 Component Library Boilerplate.
+A lightweight Vue 3 component library built for Bootstrap 5 styles.
 
-## Features
-
-- **Vue 3** (Composition API)
-- **Bootstrap 5** (Styles only, no JS dependencies)
-- **Vite** for fast development and building
-- **ESLint** + **Prettier** for code quality
-- **Docker** support
+**Note:** This library provides Vue 3 components that utilize Bootstrap 5 classes. It does **not** include the Bootstrap JS or CSS files. You must include Bootstrap CSS in your project separately.
 
 ## Installation
 
+Install the package via npm:
+
 ```bash
-npm install
+npm install vue3-bs
 ```
 
-## Documentation
+You will also need Bootstrap 5 CSS if you haven't already installed it:
 
-See [COMPONENTS.md](./COMPONENTS.md) for detailed component usage and examples.
+```bash
+npm install bootstrap
+```
+
+## Usage
+
+### 1. Global Registration
+
+Register all components globally in your Vue application entry point (e.g., `main.js` or `main.ts`).
+
+```javascript
+import { createApp } from 'vue';
+import App from './App.vue';
+
+// Import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+// Import the library
+import Vue3Bs from 'vue3-bs';
+import 'vue3-bs/dist/style.css'; // If the library exports its own styles (optional)
+
+const app = createApp(App);
+
+app.use(Vue3Bs);
+
+app.mount('#app');
+```
+
+### 2. Local Import
+
+You can also import individual components directly in your Vue components.
+
+```vue
+<script setup>
+import { VInput, VButton } from 'vue3-bs';
+</script>
+
+<template>
+    <VInput label="Email Address" placeholder="name@example.com" />
+</template>
+```
+
+## Features
+
+- **Vue 3 Composition API**: Built using the latest Vue 3 features.
+- **Bootstrap 5 Compatible**: Designed to work seamlessly with Bootstrap 5 utility classes and grid system.
+- **Form Components**: Includes a suite of form components like `VInput`, `VSelect`, `VCheckbox`, etc.
+
+## Components
+
+For a full list of available components and their usage, please refer to [COMPONENTS.md](./COMPONENTS.md).
 
 ## Development
 
-Start the playground dev server:
+For instructions on how to contribute or run the project locally, please see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
-```bash
-npm run dev
-```
+## License
 
-Build the library:
-
-```bash
-npm run build
-```
-
-## Docker Usage
-
-You can run npm commands inside a Docker container using the provided `docker-compose.yml`.
-
-### Prerequisites
-
-- Docker
-- Docker Compose
-
-### Running Commands
-
-1. **Start the environment:**
-
-   ```bash
-   docker compose up -d
-   ```
-
-2. **Install dependencies:**
-
-   ```bash
-   docker compose exec app npm install
-   ```
-
-3. **Run the dev server:**
-
-   ```bash
-   docker compose exec app npm run dev
-   ```
-   
-   Access the playground at `http://localhost:5173`.
-
-4. **Build the library:**
-
-   ```bash
-   docker compose exec app npm run build
-   ```
-
-5. **Run Linter:**
-   
-   ```bash
-   docker compose exec app npm run lint
-   ```
-
-Alternatively, you can use `docker compose run --rm` for one-off commands if you don't want to leave the container running:
-
-```bash
-docker compose run --rm app npm install
-docker compose run --rm -p 5173:5173 app npm run dev
-```
+MIT
