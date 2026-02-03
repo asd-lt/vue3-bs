@@ -1,6 +1,6 @@
 {
     "name": "vue3-bs",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "description": "Vue 3 + Bootstrap 5 Component Library",
     "type": "module",
     "sideEffects": false,

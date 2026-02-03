@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils';
 import VFile from '../VFile.vue';
 
 // Mock URL.createObjectURL since it's not available in jsdom environment
-global.URL.createObjectURL = (obj) => 'blob:mocked_url';
+global.URL.createObjectURL = () => 'blob:mocked_url';
 
 describe('VFile', () => {
     it('renders correctly', () => {

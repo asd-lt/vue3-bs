@@ -63,7 +63,11 @@ const clearErrors = () => {
       <div class="card-body">
         <h5 class="card-title">Registration Form Example</h5>
         
-        <VForm ref="formRef" :model-value="formData" :on-submit="onSubmit">
+        <VForm
+            ref="formRef"
+            :model-value="formData"
+            :on-submit="onSubmit"
+        >
           <div class="row">
             <div class="col-md-6 mb-3">
               <VInput 
@@ -141,9 +145,26 @@ const clearErrors = () => {
           </div>
 
           <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-primary">Register</button>
-            <button type="button" class="btn btn-danger" @click="triggerErrors">Simulate Errors</button>
-            <button type="button" class="btn btn-secondary" @click="clearErrors">Clear Errors</button>
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Register
+            </button>
+            <button
+                type="button"
+                class="btn btn-danger"
+                @click="triggerErrors"
+            >
+                Simulate Errors
+            </button>
+            <button
+                type="button"
+                class="btn btn-secondary"
+                @click="clearErrors"
+            >
+                Clear Errors
+            </button>
           </div>
         </VForm>
       </div>

@@ -47,7 +47,9 @@ _Tip: Run `npm run format` on files you edit to ensure compliance._
 - **Props**: Defined using `defineProps`. Use camelCase for prop names.
 - **Emits**: Defined using `defineEmits`.
 - **Directives**: Use standard Vue directives (`v-if`, `v-for`, `v-model`).
-- **Attributes**: One attribute per line if there is more than one attribute. Single attribute can be on the same line.
+- **Attributes**:
+    - If 1 attribute: Can be on the same line (e.g., `<div class="foo">`).
+    - If >1 attributes: Each attribute must be on its own line, starting with the first attribute on a new line.
 
 ### CSS / Styling
 
