@@ -1,83 +1,128 @@
 # Agent Guide for vue3-bs
 
 This repository is a Vue 3 + Bootstrap 5 Component Library.
-Follow these guidelines when analyzing or modifying the codebase.
+Use this guide to understand the development workflow, code style, and verification processes.
 
 ## 1. Project Commands
 
-**IMPORTANT**: All `npm` commands must be run via Docker using the `app` service.
+**CRITICAL**: All commands must be run via Docker using the `app` service. Do not run `npm` directly on your host machine.
 
 ### Build & Development
 
-- **Dev Server**: `docker compose run --rm --service-ports app npm run dev`
-- **Production Build**: `docker compose run --rm app npm run build`
-- **Preview Build**: `docker compose run --rm --service-ports app npm run preview`
+| Command                                                       | Description                         |
+| :------------------------------------------------------------ | :---------------------------------- |
+| `docker compose run --rm --service-ports app npm run dev`     | Start the development server (Vite) |
+| `docker compose run --rm app npm run build`                   | Build the library for production    |
+| `docker compose run --rm --service-ports app npm run preview` | Preview the production build        |
 
 ### Linting & Formatting
 
-- **Lint**: `docker compose run --rm app npm run lint`
-- **Format**: `docker compose run --rm app npm run format`
+| Command                                      | Description                      |
+| :------------------------------------------- | :------------------------------- |
+| `docker compose run --rm app npm run lint`   | Run ESLint and fix automatically |
+| `docker compose run --rm app npm run format` | Run Prettier to format code      |
 
-### Testing
+### Testing (Vitest)
 
-- **Status**: Unit tests are available using Vitest.
-- **Run Tests**: `docker compose run --rm app npm test`
-- **Action**: When adding critical logic, add unit tests in `src/**/__tests__/*.spec.js`.
+Unit tests are located in `src/**/__tests__/*.spec.js`.
+
+- **Run All Tests**:
+
+    ```bash
+    docker compose run --rm app npm test
+    ```
+
+- **Run a Single Test File**:
+
+    ```bash
+    docker compose run --rm app npm test -- src/components/form/__tests__/VInput.spec.js
+    ```
+
+- **Run Specific Test Case**:
+    ```bash
+    docker compose run --rm app npm test -- -t "should render correctly"
+    ```
 
 ## 2. Code Style & Conventions
 
-### Formatting (Source of Truth)
+### General Formatting
 
-**Note**: The codebase has some legacy inconsistencies (4 spaces/semis vs 2 spaces/no-semis).
-**Always adhere to the configuration files** for new code:
-
-- **Indentation**: 4 spaces (per `.prettierrc.json`)
-- **Semicolons**: Always (per `.prettierrc.json`)
-- **Quotes**: Single quotes (per `.prettierrc.json`)
-- **Trailing Commas**: All (per `.prettierrc.json`)
-
-_Tip: Run `npm run format` on files you edit to ensure compliance._
+- **Source of Truth**: `.prettierrc.json` and `eslint.config.js`.
+- **Indentation**: **4 spaces**.
+- **Semicolons**: Always used.
+- **Quotes**: Single quotes (`'`).
+- **Trailing Commas**: All (es5 + function parameters).
+- **Line Width**: 100 characters.
 
 ### Vue Components
 
-- **Syntax**: Use `<script setup>` with Composition API.
-- **Naming**:
-    - Filenames: `PascalCase.vue` (e.g., `VInput.vue`).
-    - Component Names: PascalCase, typically prefixed with `V` (e.g., `VButton`, `VForm`).
-- **Props**: Defined using `defineProps`. Use camelCase for prop names.
+- **Syntax**: Use `<script setup>` with the Composition API.
+- **Filenames**: PascalCase (e.g., `VInput.vue`, `VSelect.vue`).
+- **Component Names**: PascalCase, prefixed with `V` (e.g., `VButton`, `VCard`).
+- **Props**: Defined using `defineProps`. Use camelCase for prop keys.
 - **Emits**: Defined using `defineEmits`.
-- **Directives**: Use standard Vue directives (`v-if`, `v-for`, `v-model`).
-- **Attributes**:
-    - If 1 attribute: Can be on the same line (e.g., `<div class="foo">`).
-    - If >1 attributes: Each attribute must be on its own line, starting with the first attribute on a new line.
+- **Directives**: Use shorthands (`@` for `v-on`, `:` for `v-bind`, `#` for `v-slot`).
+- **Self-closing**: Self-close tags if they have no content (e.g., `<VInput />`).
 
-### CSS / Styling
+### Attributes & Props Ordering
 
-- **Framework**: Bootstrap 5.
-- **Classes**: Use standard Bootstrap classes (e.g., `form-control`, `input-group`, `is-invalid`).
-- **Scoped Styles**: Use `<style scoped>` if custom CSS is needed, but prefer Bootstrap classes.
+- **ESLint Rule**: `vue/max-attributes-per-line` is configured strictly.
+    - **Singleline**: Max 1 attribute per line.
+    - **Multiline**: Max 1 attribute per line.
+- **Note**: Some legacy code may violate this. **New code must adhere to the linter.**
 
-### File Structure
+```vue
+<!-- Good -->
+<VInput v-model="value" label="Name" :disabled="isDisabled" />
 
-- `src/components/`: Vue components (grouped by category, e.g., `form/`).
-- `src/utils/`: Utility functions (kebab-case filenames).
-- `src/directives/`: Custom Vue directives.
-- `src/index.js`: Library entry point (exports components).
+<!-- Avoid (multiple attributes on single line) -->
+<VInput v-model="value" label="Name" />
+```
+
+### Imports
+
+- **Extensions**: Always include file extensions for local imports.
+    ```javascript
+    import VInput from './VInput.vue'; // Correct
+    import VInput from './VInput'; // Incorrect
+    ```
+- **Order**:
+    1. Vue / Third-party libraries
+    2. Local components
+    3. Utilities / Constants
+    4. Styles (if any)
 
 ### JavaScript / Logic
 
-- **Module System**: ESM (`type: "module"` in `package.json`).
-- **Imports**: Always include file extensions for local imports (e.g., `import X from './X.vue'`).
-- **Reactivity**: Heavily use `computed`, `ref`, and `inject`.
+- **Reactivity**: Prefer `ref` over `reactive`. Use `computed` for derived state.
 - **Error Handling**:
-    - Form components rely on injecting `form-errors`.
-    - Components typically use a child `ErrorMessage` component and check `hasError` state.
+    - Components often inject `form-errors` provided by a parent `VForm`.
+    - Use the `ErrorMessage` component to display validation errors.
+- **Props/Emits**:
+    - Use `baseProps` and `baseComputed` from `base-input.js` for common form field logic if creating a new input type.
+
+### CSS / Styling
+
+- **Framework**: Bootstrap 5 is the foundation.
+- **Classes**: usage of standard Bootstrap utility classes is preferred over custom CSS.
+- **Scoped Styles**: Use `<style scoped lang="scss">` only when Bootstrap classes are insufficient.
 
 ## 3. Workflow for Agents
 
-1.  **Analyze**: Check `package.json` and `eslint.config.js` to understand the environment.
-2.  **Edit**: modifying components in `src/components`. Maintain the `V` prefix convention.
-3.  **Verify**:
-    - Run `npm run lint` to fix standard issues.
-    - Run `npm run format` to ensure style consistency.
-    - Since there are no tests, verify build success with `npm run build`.
+1.  **Analyze**:
+    - Read `package.json` to understand dependencies.
+    - Check `src/components` for similar components to mimic.
+    - Read `AGENTS.md` (this file) to refresh on conventions.
+
+2.  **Plan**:
+    - Identify which components need modification or creation.
+    - Determine if new tests are needed.
+
+3.  **Implement**:
+    - Write code following the **4-space indentation** and **single-quote** rules.
+    - Ensure attributes are broken into multiple lines if more than one.
+
+4.  **Verify**:
+    - **Lint**: Run `docker compose run --rm app npm run lint` to fix formatting.
+    - **Test**: Run `docker compose run --rm app npm test` to ensure no regressions.
+    - **Build**: Run `docker compose run --rm app npm run build` to confirm the build passes.

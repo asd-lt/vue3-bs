@@ -79,7 +79,7 @@ export function baseComputed(props, formData, formProps, emit) {
     });
 
     const parsedName = computed(() => {
-        if(!formProps.value?.enctype) {
+        if (!formProps || !formProps.value || !formProps.value.enctype) {
             return props.name;
         }
 
