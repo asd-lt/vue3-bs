@@ -58,11 +58,11 @@ const clearErrors = () => {
   <div class="container mt-5 mb-5">
     <h1>Vue3-BS Playground</h1>
     <p class="lead">Testing Form Components</p>
-    
+
     <div class="card mb-4">
       <div class="card-body">
         <h5 class="card-title">Registration Form Example</h5>
-        
+
         <VForm
             ref="formRef"
             :model-value="formData"
@@ -70,19 +70,19 @@ const clearErrors = () => {
         >
           <div class="row">
             <div class="col-md-6 mb-3">
-              <VInput 
-                name="email" 
-                label="Email Address" 
+              <VInput
+                name="email"
+                label="Email Address"
                 placeholder="Enter your email"
                 type="email"
                 required
               />
             </div>
-            
+
             <div class="col-md-6 mb-3">
-              <VInput 
-                name="password" 
-                label="Password" 
+              <VInput
+                name="password"
+                label="Password"
                 placeholder="Enter your password"
                 type="password"
                 required
