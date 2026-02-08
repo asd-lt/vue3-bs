@@ -54,7 +54,9 @@ const mainClass = computed(() => {
             class="form-check-label"
             :for="parsedId"
         >
-            {{ parsedLabel }}
+            <slot>
+                {{ parsedLabel }}
+            </slot>
         </label>
     </div>
 </template>
