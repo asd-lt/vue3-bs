@@ -57,6 +57,27 @@ export function baseComputed(props, formData, formProps, emit) {
         return props.placeholder;
     });
 
+    const fieldValue = computed({
+        get() {
+            if (formData) {
+                return get(formData.value, props.name, props.value);
+            }
+
+            return props.modelValue || props.value;
+        },
+        // setter
+        set(value) {
+            if (formData) {
+                set(formData.value, props.name, value);
+            }
+
+            if (emit) {
+                emit('update:modelValue', value);
+                emit('change', value);
+            }
+        },
+    });
+
     const parsedName = computed(() => {
         if (!formProps || !formProps.value || !formProps.value.enctype) {
             return props.name;
@@ -71,27 +92,6 @@ export function baseComputed(props, formData, formProps, emit) {
         });
 
         return fieldName;
-    });
-
-    const fieldValue = computed({
-        get() {
-            if (formData) {
-                return get(formData.value, parsedName.value, props.value);
-            }
-
-            return props.modelValue || props.value;
-        },
-        // setter
-        set(value) {
-            if (formData) {
-                set(formData.value, parsedName.value, value);
-            }
-
-            if (emit) {
-                emit('update:modelValue', value);
-                emit('change', value);
-            }
-        },
     });
 
     const parsedWrapperClass = computed(() => {
