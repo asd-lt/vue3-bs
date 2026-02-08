@@ -1,6 +1,6 @@
 <script setup>
 import { computed, provide, reactive, ref } from 'vue';
-import { get } from '../../utils/object-utils';
+import { get, set } from '../../utils/object-utils';
 
 const emit = defineEmits(['response', 'responseError', 'loading', 'update:modelValue']);
 
@@ -101,7 +101,12 @@ function prepareSubmitData() {
         return submitData;
     }
 
-    return Object.fromEntries(submitData.entries());
+    const jsonData = {};
+    for (const [key, value] of submitData.entries()) {
+        set(jsonData, key, value);
+    }
+
+    return jsonData;
 }
 
 function setErrors(errors) {
