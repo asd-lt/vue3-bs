@@ -1,7 +1,5 @@
 <script setup>
-import {
-    computed, inject, onMounted, reactive, ref, watch
-} from 'vue';
+import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import vClickOutside from '../../directives/click-outside';
 import vScrollEnd from '../../directives/scroll-end';
 import ErrorMessage from './ErrorMessage.vue';
@@ -17,14 +15,11 @@ const selectedItem = reactive({});
 const isLoading = ref(false);
 const nextUrl = ref(null);
 
-const emit = defineEmits([
-    'update:modelValue',
-    'select',
-    'change',
-]);
+const emit = defineEmits(['update:modelValue', 'select', 'change']);
 
 const fieldError = ref(null);
 const formData = inject('form-data', undefined);
+const formProps = inject('form-props');
 
 const props = defineProps(
     baseProps({
@@ -71,7 +66,7 @@ const {
     fieldValue,
     parsedName,
     parsedWrapperClass,
-} = baseComputed(props, formData, emit);
+} = baseComputed(props, formData, formProps, emit);
 
 const isFieldValueEmpty = computed(() => {
     if (props.multiple && Array.isArray(fieldValue.value)) {
@@ -112,7 +107,9 @@ const parsedValue = computed(() => {
         return '';
     }
 
-    return (selectedItem.value && selectedItem.value[props.keyName]) || fieldValue.value || '&nbsp;';
+    return (
+        (selectedItem.value && selectedItem.value[props.keyName]) || fieldValue.value || '&nbsp;'
+    );
 });
 
 function filterResults(query) {
@@ -150,7 +147,10 @@ function callUrl(url, params = {}) {
             return filterResults(params.filter.search);
         }
 
-        if (!Array.isArray(searchResults.value) || (!response?.data?.links?.prev && !response?.data?.prev_page_url)) {
+        if (
+            !Array.isArray(searchResults.value) ||
+            (!response?.data?.links?.prev && !response?.data?.prev_page_url)
+        ) {
             searchResults.value = [];
         }
 
@@ -220,9 +220,9 @@ function selectItem(item) {
         }
     } else {
         if (
-            fieldValue.value !== item[props.keyId]
-            || !selectedItem.value
-            || selectedItem.value[props.keyId] !== item[props.keyId]
+            fieldValue.value !== item[props.keyId] ||
+            !selectedItem.value ||
+            selectedItem.value[props.keyId] !== item[props.keyId]
         ) {
             selectedItem.value = item;
             fieldValue.value = item[props.keyId];
@@ -350,28 +350,12 @@ watch(
 );
 </script>
 <template>
-    <div
-        :class="parsedWrapperClass"
-        class="position-relative"
-    >
-        <input
-            :id="parsedId"
-            v-model="fieldValue"
-            type="hidden"
-            :name="parsedName"
-        />
-        <label
-            v-if="isLabelEnabled"
-            class="form-label"
-            :for="parsedId"
-        >
+    <div :class="parsedWrapperClass" class="position-relative">
+        <input :id="parsedId" v-model="fieldValue" type="hidden" :name="parsedName" />
+        <label v-if="isLabelEnabled" class="form-label" :for="parsedId">
             {{ parsedLabel }}
         </label>
-        <div
-            ref="refSearchPlaceholder"
-            :class="parsedFieldClass"
-            @click="toggleSearch"
-        >
+        <div ref="refSearchPlaceholder" :class="parsedFieldClass" @click="toggleSearch">
             <slot
                 name="selected-item"
                 :field-value="fieldValue"
@@ -385,10 +369,7 @@ watch(
                         class="badge bg-dark me-1"
                     >
                         {{ item[props.keyName] }}
-                        <span
-                            class="px-1 ms-1 cursor-pointer"
-                            @click="selectItem(item)"
-                        >
+                        <span class="px-1 ms-1 cursor-pointer" @click="selectItem(item)">
                             &times;
                         </span>
                     </span>
@@ -418,7 +399,7 @@ watch(
                         class="form-control search-input"
                         placeholder="Search ..."
                         @input="onSearch"
-                    >
+                    />
                 </li>
                 <li
                     v-for="(item, index) in searchValues"
@@ -427,9 +408,7 @@ watch(
                     :class="{ active: isSelected(item) }"
                     @click="selectItem(item)"
                 >
-                    <slot
-                        :item="item"
-                    >
+                    <slot :item="item">
                         {{ item[props.keyName] }}
                     </slot>
                 </li>
@@ -437,9 +416,7 @@ watch(
                     v-if="!searchValues.length"
                     class="list-group-item list-group-item-action text-muted disabled"
                 >
-                    <slot name="no-results">
-                        ...
-                    </slot>
+                    <slot name="no-results"> ... </slot>
                 </li>
                 <li
                     v-if="isCreateVisible"
@@ -451,10 +428,7 @@ watch(
             </ul>
         </div>
 
-        <ErrorMessage
-            ref="fieldError"
-            :name="props.name"
-        />
+        <ErrorMessage ref="fieldError" :name="props.name" />
     </div>
 </template>
 <style lang="scss" scoped>

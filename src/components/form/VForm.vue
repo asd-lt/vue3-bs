@@ -1,15 +1,8 @@
 <script setup>
-import {
-    computed, provide, reactive, ref
-} from 'vue';
+import { computed, provide, reactive, ref } from 'vue';
 import { get } from '../../utils/object-utils';
 
-const emit = defineEmits([
-    'response',
-    'responseError',
-    'loading',
-    'update:modelValue',
-]);
+const emit = defineEmits(['response', 'responseError', 'loading', 'update:modelValue']);
 
 const props = defineProps({
     action: {
@@ -55,13 +48,16 @@ const formData = computed({
     },
 });
 
+provide('form-props', props);
 provide('form-data', formData);
 
 const formErrors = reactive({});
 provide('form-errors', formErrors);
 
 const formHasError = computed(() => {
-    return formErrors.value && formErrors.value.errors && Object.keys(formErrors.value.errors).length;
+    return (
+        formErrors.value && formErrors.value.errors && Object.keys(formErrors.value.errors).length
+    );
 });
 
 const formClass = computed(() => {
@@ -92,7 +88,6 @@ function prepareSubmitData() {
     const submitData = new FormData(refForm.value);
 
     if (props.method) {
-         
         submitData.append('_method', props.method);
     }
 
@@ -121,17 +116,23 @@ function submitForm(callback) {
     startLoading();
     setErrors(null);
 
-    return axios.post(props.action, prepareSubmitData()).then((response) => {
-        emit('response', response.data);
-        if (callback) callback(response.data);
-    }, (error) => {
-        setErrors(error?.response?.data?.errors);
+    return axios
+        .post(props.action, prepareSubmitData())
+        .then(
+            (response) => {
+                emit('response', response.data);
+                if (callback) callback(response.data);
+            },
+            (error) => {
+                setErrors(error?.response?.data?.errors);
 
-        emit('responseError', error?.response?.data);
-        if (callback) callback(error?.response?.data?.errors);
-    }).finally(() => {
-        stopLoading();
-    });
+                emit('responseError', error?.response?.data);
+                if (callback) callback(error?.response?.data?.errors);
+            },
+        )
+        .finally(() => {
+            stopLoading();
+        });
 }
 
 function onFormSubmit(event) {
@@ -160,18 +161,9 @@ defineExpose({
     setErrors,
     setField,
 });
-
 </script>
 <template>
-    <form
-        ref="refForm"
-        :class="formClass"
-        :action="props.action"
-        @submit="onFormSubmit"
-    >
-        <slot
-            :submit-form="onFormSubmit"
-            :form-data="formData"
-        />
+    <form ref="refForm" :class="formClass" :action="props.action" @submit="onFormSubmit">
+        <slot :submit-form="onFormSubmit" :form-data="formData" />
     </form>
 </template>

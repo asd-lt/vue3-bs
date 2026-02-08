@@ -36,7 +36,7 @@ export function baseProps(props = {}) {
     };
 }
 
-export function baseComputed(props, formData, emit) {
+export function baseComputed(props, formData, formProps, emit) {
     const parsedId = computed(() => {
         return `field-${props.name}`;
     });
@@ -79,6 +79,10 @@ export function baseComputed(props, formData, emit) {
     });
 
     const parsedName = computed(() => {
+        if(!formProps.value?.enctype) {
+            return props.name;
+        }
+
         const parts = props.name.split('.');
         let fieldName = parts[0];
         Object.keys(parts).forEach((index) => {

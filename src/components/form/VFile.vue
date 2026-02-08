@@ -1,7 +1,5 @@
 <script setup>
-import {
-    computed, inject, ref, onMounted
-} from 'vue';
+import { computed, inject, ref, onMounted } from 'vue';
 import ErrorMessage from './ErrorMessage.vue';
 import { baseProps, baseComputed } from './base-input';
 
@@ -9,12 +7,15 @@ const fieldError = ref(null);
 const files = ref([]);
 const inputFile = ref(null);
 const formData = inject('form-data');
+const formProps = inject('form-props');
 const formErrors = inject('form-errors');
 const emit = defineEmits(['update:modelValue', 'change']);
 
-const props = defineProps(baseProps({
-    multiple: Boolean,
-}));
+const props = defineProps(
+    baseProps({
+        multiple: Boolean,
+    }),
+);
 
 const {
     parsedId,
@@ -24,7 +25,7 @@ const {
     fieldValue,
     parsedName,
     parsedWrapperClass,
-} = baseComputed(props, formData, emit);
+} = baseComputed(props, formData, formProps, emit);
 
 onMounted(() => {
     if (Array.isArray(fieldValue.value)) {
@@ -98,11 +99,7 @@ function removeFile(index) {
 </script>
 <template>
     <div :class="parsedWrapperClass">
-        <label
-            v-if="isLabelEnabled"
-            class="form-label"
-            :for="parsedId"
-        >
+        <label v-if="isLabelEnabled" class="form-label" :for="parsedId">
             {{ parsedLabel }}
         </label>
         <div class="d-flex">
@@ -113,7 +110,7 @@ function removeFile(index) {
                 :disabled="props.disabled"
                 :multiple="props.multiple"
                 type="file"
-                style="display: none;"
+                style="display: none"
                 :class="parsedFieldClass"
                 @change="fileSelected"
             />
@@ -126,37 +123,23 @@ function removeFile(index) {
                 {{ parsedPlaceholder }}
             </button>
             <template v-else>
-                <slot
-                    :files="files"
-                    :remove-file="removeFile"
-                    :select-file="selectFile"
-                >
+                <slot :files="files" :remove-file="removeFile" :select-file="selectFile">
                     <div
                         v-for="(file, index) in files"
                         :key="`file-${index}-${file.name}`"
                         class="badge bg-secondary mr-1"
                     >
                         {{ file.name }}
-                        <span
-                            class="cursor-pointer"
-                            @click="removeFile(index)"
-                        >
+                        <span class="cursor-pointer" @click="removeFile(index)">
                             &nbsp;&times;
                         </span>
                     </div>
-                    <span
-                        v-if="props.multiple"
-                        class="badge bg-secondary"
-                        @click="selectFile"
-                    >
+                    <span v-if="props.multiple" class="badge bg-secondary" @click="selectFile">
                         +
                     </span>
                 </slot>
             </template>
         </div>
-        <ErrorMessage
-            ref="fieldError"
-            :name="props.name"
-        />
+        <ErrorMessage ref="fieldError" :name="props.name" />
     </div>
 </template>

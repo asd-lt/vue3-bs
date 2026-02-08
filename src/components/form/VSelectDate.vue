@@ -1,7 +1,5 @@
 <script setup>
-import {
-    computed, inject, ref
-} from 'vue';
+import { computed, inject, ref } from 'vue';
 import vClickOutside from '../../directives/click-outside';
 import ErrorMessage from './ErrorMessage.vue';
 import VCalendar from './_VCalendar.vue';
@@ -12,6 +10,7 @@ const refPlaceholder = ref(false);
 
 const fieldError = ref(null);
 const formData = inject('form-data');
+const formProps = inject('form-props');
 const emit = defineEmits(['update:modelValue', 'change']);
 
 const props = defineProps(baseProps());
@@ -24,7 +23,7 @@ const {
     fieldValue,
     parsedName,
     parsedWrapperClass,
-} = baseComputed(props, formData, emit);
+} = baseComputed(props, formData, formProps, emit);
 
 const parsedFieldClass = computed(() => {
     const fieldClass = ['form-select'];
@@ -86,24 +85,11 @@ function onDateSelect(date) {
 </script>
 <template>
     <div :class="parsedWrapperClass">
-        <input
-            :id="parsedId"
-            v-model="fieldValue"
-            type="hidden"
-            :name="parsedName"
-        />
-        <label
-            v-if="isLabelEnabled"
-            class="form-label"
-            :for="parsedId"
-        >
+        <input :id="parsedId" v-model="fieldValue" type="hidden" :name="parsedName" />
+        <label v-if="isLabelEnabled" class="form-label" :for="parsedId">
             {{ parsedLabel }}
         </label>
-        <div
-            ref="refPlaceholder"
-            :class="parsedFieldClass"
-            @click="toggleCalendar"
-        >
+        <div ref="refPlaceholder" :class="parsedFieldClass" @click="toggleCalendar">
             {{ parsedValue || '&nbsp;' }}
         </div>
         <div
@@ -111,16 +97,10 @@ function onDateSelect(date) {
             class="calendar-block shadow-sm"
             :class="{ 'calendar-block--visible': isCalendarBlockVisible }"
         >
-            <VCalendar
-                :date="fieldValue"
-                @selected="onDateSelect"
-            />
+            <VCalendar :date="fieldValue" @selected="onDateSelect" />
         </div>
 
-        <ErrorMessage
-            ref="fieldError"
-            :name="props.name"
-        />
+        <ErrorMessage ref="fieldError" :name="props.name" />
     </div>
 </template>
 <style lang="scss">
@@ -131,7 +111,7 @@ function onDateSelect(date) {
     display: none;
     border-radius: 6px;
     padding: 5px 10px;
-    background-color: #FFF;
+    background-color: #fff;
     z-index: 1;
 
     &--visible {

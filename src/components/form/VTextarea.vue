@@ -1,12 +1,11 @@
 <script setup>
-import {
-    computed, inject, ref
-} from 'vue';
+import { computed, inject, ref } from 'vue';
 import ErrorMessage from './ErrorMessage.vue';
 import { baseProps, baseComputed } from './base-input';
 
 const fieldError = ref(null);
 const formData = inject('form-data');
+const formProps = inject('form-props');
 const emit = defineEmits(['update:modelValue', 'change']);
 
 const props = defineProps(
@@ -24,7 +23,7 @@ const {
     parsedName,
     parsedWrapperClass,
     parsedAttributes,
-} = baseComputed(props, formData, emit);
+} = baseComputed(props, formData, formProps, emit);
 
 const parsedFieldClass = computed(() => {
     const fieldClass = ['form-control'];
@@ -35,15 +34,10 @@ const parsedFieldClass = computed(() => {
 
     return fieldClass;
 });
-
 </script>
 <template>
     <div :class="parsedWrapperClass">
-        <label
-            v-if="isLabelEnabled"
-            class="form-label"
-            :for="parsedId"
-        >
+        <label v-if="isLabelEnabled" class="form-label" :for="parsedId">
             {{ parsedLabel }}
         </label>
         <textarea
@@ -55,9 +49,6 @@ const parsedFieldClass = computed(() => {
             :placeholder="parsedPlaceholder"
             v-bind="parsedAttributes"
         />
-        <ErrorMessage
-            ref="fieldError"
-            :name="props.name"
-        />
+        <ErrorMessage ref="fieldError" :name="props.name" />
     </div>
 </template>
