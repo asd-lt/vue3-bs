@@ -33,7 +33,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Import the library
 import Vue3Bs from 'vue3-bs';
-import 'vue3-bs/dist/style.css'; // If the library exports its own styles (optional)
+import 'vue3-bs/dist/vue3-bs.css'; // Required for component styles
 
 const app = createApp(App);
 
