@@ -55,6 +55,10 @@ const props = defineProps(
             default: false,
             type: [Boolean],
         },
+        customFilter: {
+            default: null,
+            type: [Function],
+        },
     }),
 );
 
@@ -119,6 +123,14 @@ function filterResults(query) {
 }
 
 const searchValues = computed(() => {
+    if (props.customFilter) {
+        return props.customFilter(searchResults.value, searchString.value);
+    }
+
+    if (!props.isStatic) {
+        return searchResults.value;
+    }
+
     return filterResults(searchString.value);
 });
 
