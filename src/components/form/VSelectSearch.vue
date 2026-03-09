@@ -195,7 +195,7 @@ function isSelected(item) {
     return fieldValue.value === item[props.keyId];
 }
 
-function selectItem(item) {
+function selectItem(item, emit = true) {
     if (props.multiple) {
         const values = Array.isArray(fieldValue.value) ? [...fieldValue.value] : [];
         let items = Array.isArray(selectedItem.value) ? [...selectedItem.value] : [];
@@ -213,7 +213,9 @@ function selectItem(item) {
 
         fieldValue.value = values;
         selectedItem.value = items;
-        emit('select', fieldValue.value, selectedItem);
+        if (emit) {
+            emit('select', fieldValue.value, selectedItem);
+        }
 
         if (refSearchField.value) {
             refSearchField.value.focus();
@@ -226,7 +228,9 @@ function selectItem(item) {
         ) {
             selectedItem.value = item;
             fieldValue.value = item[props.keyId];
-            emit('select', fieldValue.value, selectedItem);
+            if (emit) {
+                emit('select', fieldValue.value, selectedItem);
+            }
         }
 
         hideSearch();
@@ -300,7 +304,7 @@ function preselectValue() {
             const item = findItemById(fieldValue.value);
 
             if (item) {
-                selectItem(item);
+                selectItem(item, false);
             }
         }
     }
