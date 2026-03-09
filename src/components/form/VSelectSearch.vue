@@ -352,6 +352,11 @@ watch(
     },
     { immediate: false },
 );
+
+defineExpose({
+    toggleSearch,
+    queryResults,
+});
 </script>
 <template>
     <div :class="parsedWrapperClass" class="position-relative">
