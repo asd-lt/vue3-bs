@@ -195,7 +195,7 @@ function isSelected(item) {
     return fieldValue.value === item[props.keyId];
 }
 
-function selectItem(item, emit = true) {
+function selectItem(item, isEmitEnabled = true) {
     if (props.multiple) {
         const values = Array.isArray(fieldValue.value) ? [...fieldValue.value] : [];
         let items = Array.isArray(selectedItem.value) ? [...selectedItem.value] : [];
@@ -213,7 +213,7 @@ function selectItem(item, emit = true) {
 
         fieldValue.value = values;
         selectedItem.value = items;
-        if (emit) {
+        if (isEmitEnabled) {
             emit('select', fieldValue.value, selectedItem);
         }
 
@@ -228,7 +228,7 @@ function selectItem(item, emit = true) {
         ) {
             selectedItem.value = item;
             fieldValue.value = item[props.keyId];
-            if (emit) {
+            if (isEmitEnabled) {
                 emit('select', fieldValue.value, selectedItem);
             }
         }
