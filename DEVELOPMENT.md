@@ -79,7 +79,36 @@ You can run npm commands inside a Docker container using the provided `docker-co
 
 Alternatively, you can use `docker compose run --rm` for one-off commands if you don't want to leave the container running:
 
-```bash
-docker compose run --rm app npm install
-docker compose run --rm -p 5173:5173 app npm run dev
-```
+## Publishing to npmjs
+
+Build and publish the library to npmjs.
+
+### Prerequisites
+
+- npm account
+- Access to the `vue3-bs` package on npmjs
+
+### Commands
+
+1. **Build the library:**
+
+    ```bash
+    docker compose run --rm app npm run build
+    ```
+
+2. **Login to npm (if not already authenticated):**
+
+    ```bash
+    docker compose run --rm app npm login
+    ```
+
+3. **Publish to npmjs:**
+
+    ```bash
+    docker compose run --rm app npm publish
+    ```
+
+### Tips
+
+- Run `npm publish --dry-run` to test the publish process without actually publishing.
+- After publishing, you can view the package at `https://www.npmjs.com/package/vue3-bs`.
