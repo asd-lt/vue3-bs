@@ -6,7 +6,7 @@ import { baseProps, baseComputed } from './base-input';
 const fieldError = ref(null);
 const formData = inject('form-data');
 const formProps = inject('form-props');
-const emit = defineEmits(['update:modelValue', 'change']);
+const emit = defineEmits(['update:modelValue', 'change', 'focus', 'blur']);
 
 const props = defineProps(
     baseProps({
@@ -48,6 +48,8 @@ const parsedFieldClass = computed(() => {
             :class="parsedFieldClass"
             :placeholder="parsedPlaceholder"
             v-bind="parsedAttributes"
+            @blur="$emit('blur')"
+            @focus="$emit('focus')"
         />
         <ErrorMessage ref="fieldError" :name="props.name" />
     </div>
