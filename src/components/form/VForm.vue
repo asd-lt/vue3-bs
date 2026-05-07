@@ -117,6 +117,12 @@ function setErrors(errors) {
     }
 }
 
+function setError(field, errorMessage) {
+    if(field) {
+        set(formErrors.value, 'errors.' + field, errorMessage);
+    }
+}
+
 function submitForm(callback) {
     startLoading();
     setErrors(null);
@@ -164,6 +170,7 @@ defineExpose({
     formHasError,
     submitForm,
     setErrors,
+    setError,
     setField,
 });
 </script>
