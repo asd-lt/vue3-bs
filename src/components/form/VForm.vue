@@ -118,8 +118,16 @@ function setErrors(errors) {
 }
 
 function setError(field, errorMessage) {
-    if(field) {
-        set(formErrors.value, 'errors.' + field, errorMessage);
+    if (field) {
+        if (!formErrors.value.errors) {
+            formErrors.value.errors = {};
+        }
+
+        if (errorMessage) {
+            formErrors.value.errors[field] = [errorMessage];
+        } else {
+            delete formErrors.value.errors[field];
+        }
     }
 }
 
