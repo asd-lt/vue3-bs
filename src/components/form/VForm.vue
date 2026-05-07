@@ -120,7 +120,7 @@ function setErrors(errors) {
 function setError(field, errorMessage) {
     if (field) {
         if (!formErrors.value.errors) {
-            formErrors.value.errors = {};
+            formErrors.value = { errors: {}};
         }
 
         if (errorMessage) {
