@@ -134,12 +134,30 @@ const searchValues = computed(() => {
     return filterResults(searchString.value);
 });
 
+const selectedItems = computed(() => {
+    if (Array.isArray(selectedItem.value)) {
+        return selectedItem.value;
+    }
+
+    return selectedItem.value ? [selectedItem.value] : [];
+});
+
+const fieldValueList = computed(() => {
+    return Array.isArray(fieldValue.value) ? fieldValue.value : [];
+});
+
 const isCreateVisible = computed(() => {
     if (props.create === false) {
         return false;
     }
 
-    return searchString.value && searchString.value.length > 0 && searchValues.value.length === 0;
+    if (!searchString.value || searchString.value.length === 0 || searchValues.value.length > 0) {
+        return false;
+    }
+
+    // A created item is not on the server yet, so searching for it again finds nothing. Without
+    // this the create row would come back and clicking it would toggle the item off again.
+    return !selectedItems.value.some((item) => item[props.keyName] === searchString.value);
 });
 
 function callUrl(url, params = {}) {
@@ -295,6 +313,13 @@ function toggleSearch() {
 }
 
 function clickOutside(e) {
+    // Selecting a row can re-render the list and remove the very element that was clicked, for
+    // example the create row once its item exists. That click reaches the document with a
+    // detached target, which is not a click outside the field and must not close it.
+    if (e.target && e.target.isConnected === false) {
+        return;
+    }
+
     if (isSearchBlockVisible.value && !refSearchPlaceholder.value.contains(e.target)) {
         hideSearch();
     }
@@ -306,12 +331,32 @@ function onScrollEnd() {
     }
 }
 
+/**
+ * Resolves the objects behind the selected ids, keeping the ones already known.
+ *
+ * Every search replaces `searchResults`, and a created item never exists there at all, so
+ * looking selections up in the results alone would drop everything the latest query did not
+ * return. Known items win, the results only fill in the ones we have not seen yet.
+ */
+function resolveSelectedItems(ids) {
+    const known = selectedItems.value;
+
+    return ids
+        .map((id) => {
+            return (
+                known.find((item) => item[props.keyId] === id) ||
+                searchResults.value.find((item) => item[props.keyId] === id) ||
+                null
+            );
+        })
+        .filter(Boolean);
+}
+
 function preselectValue() {
     if (!isFieldValueEmpty.value) {
         if (props.multiple) {
             const ids = Array.isArray(fieldValue.value) ? fieldValue.value : [fieldValue.value];
-            const items = searchResults.value.filter((item) => ids.includes(item[props.keyId]));
-            selectedItem.value = items;
+            selectedItem.value = resolveSelectedItems(ids);
         } else {
             const item = findItemById(fieldValue.value);
 
@@ -354,9 +399,7 @@ watch(
     async (newValue, oldValue) => {
         if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
             if (props.multiple) {
-                const ids = Array.isArray(newValue) ? newValue : [];
-                const items = searchResults.value.filter((item) => ids.includes(item[props.keyId]));
-                selectedItem.value = items;
+                selectedItem.value = resolveSelectedItems(Array.isArray(newValue) ? newValue : []);
             } else {
                 selectItem(findItemById(newValue) || {});
             }
@@ -372,7 +415,23 @@ defineExpose({
 </script>
 <template>
     <div :class="parsedWrapperClass" class="position-relative">
-        <input :id="parsedId" v-model="fieldValue" type="hidden" :name="parsedName" />
+        <!--
+            A multiple select holds an array, and a single input would submit it as one
+            comma-joined string, so each value gets its own indexed input. VForm expands those
+            names back into an array. Nothing is submitted while the selection is empty, which
+            is what a native multiple select does too.
+        -->
+        <template v-if="props.multiple">
+            <input
+                v-for="(value, index) in fieldValueList"
+                :id="index === 0 ? parsedId : null"
+                :key="`${parsedName}-${index}-${value}`"
+                type="hidden"
+                :name="`${parsedName}.${index}`"
+                :value="value"
+            />
+        </template>
+        <input v-else :id="parsedId" v-model="fieldValue" type="hidden" :name="parsedName" />
         <label v-if="isLabelEnabled" class="form-label" :for="parsedId">
             {{ parsedLabel }}
         </label>
