@@ -8,28 +8,28 @@
  * @returns {*}
  */
 export function get(obj, path, defaultValue) {
-  if (obj === null || obj === undefined) {
-    return defaultValue
-  }
-
-  // Convert string path 'a[0].b' -> ['a', '0', 'b']
-  const keys = Array.isArray(path)
-    ? path
-    : path
-        .replace(/\[(\d+)\]/g, '.$1')
-        .split('.')
-        .filter(Boolean)
-
-  let result = obj
-
-  for (const key of keys) {
-    if (result === null || result === undefined) {
-      return defaultValue
+    if (obj === null || obj === undefined) {
+        return defaultValue;
     }
-    result = result[key]
-  }
 
-  return result === undefined ? defaultValue : result
+    // Convert string path 'a[0].b' -> ['a', '0', 'b']
+    const keys = Array.isArray(path)
+        ? path
+        : path
+              .replace(/\[(\d+)\]/g, '.$1')
+              .split('.')
+              .filter(Boolean);
+
+    let result = obj;
+
+    for (const key of keys) {
+        if (result === null || result === undefined) {
+            return defaultValue;
+        }
+        result = result[key];
+    }
+
+    return result === undefined ? defaultValue : result;
 }
 
 /**
@@ -42,34 +42,34 @@ export function get(obj, path, defaultValue) {
  * @returns {Object} The modified object
  */
 export function set(obj, path, value) {
-  if (obj === null || obj === undefined) {
-    return obj
-  }
-
-  const keys = Array.isArray(path)
-    ? path
-    : path
-        .replace(/\[(\d+)\]/g, '.$1')
-        .split('.')
-        .filter(Boolean)
-
-  let current = obj
-
-  for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i]
-
-    // If the key doesn't exist or isn't an object, create it
-    if (current[key] === undefined || current[key] === null) {
-      // Look ahead to see if the next key is a number (implying array)
-      const nextKey = keys[i + 1]
-      current[key] = String(nextKey).match(/^\d+$/) ? [] : {}
+    if (obj === null || obj === undefined) {
+        return obj;
     }
 
-    current = current[key]
-  }
+    const keys = Array.isArray(path)
+        ? path
+        : path
+              .replace(/\[(\d+)\]/g, '.$1')
+              .split('.')
+              .filter(Boolean);
 
-  const lastKey = keys[keys.length - 1]
-  current[lastKey] = value
+    let current = obj;
 
-  return obj
+    for (let i = 0; i < keys.length - 1; i++) {
+        const key = keys[i];
+
+        // If the key doesn't exist or isn't an object, create it
+        if (current[key] === undefined || current[key] === null) {
+            // Look ahead to see if the next key is a number (implying array)
+            const nextKey = keys[i + 1];
+            current[key] = String(nextKey).match(/^\d+$/) ? [] : {};
+        }
+
+        current = current[key];
+    }
+
+    const lastKey = keys[keys.length - 1];
+    current[lastKey] = value;
+
+    return obj;
 }

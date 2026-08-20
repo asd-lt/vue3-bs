@@ -1,5 +1,4 @@
 <script setup>
-
 import { computed, inject } from 'vue';
 
 const formErrors = inject('form-errors', {});
@@ -12,7 +11,11 @@ const props = defineProps({
 });
 
 const hasError = computed(() => {
-    return formErrors?.value?.errors && formErrors?.value?.errors[props.name] && formErrors.value.errors[props.name].length;
+    return (
+        formErrors?.value?.errors &&
+        formErrors?.value?.errors[props.name] &&
+        formErrors.value.errors[props.name].length
+    );
 });
 
 const parsedErrorMessage = computed(() => {
@@ -20,7 +23,6 @@ const parsedErrorMessage = computed(() => {
 });
 
 defineExpose({ hasError });
-
 </script>
 <template>
     <div

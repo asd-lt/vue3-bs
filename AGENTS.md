@@ -64,19 +64,22 @@ Unit tests are located in `src/**/__tests__/*.spec.js`.
 - **Directives**: Use shorthands (`@` for `v-on`, `:` for `v-bind`, `#` for `v-slot`).
 - **Self-closing**: Self-close tags if they have no content (e.g., `<VInput />`).
 
-### Attributes & Props Ordering
+### Attributes & Props
 
-- **ESLint Rule**: `vue/max-attributes-per-line` is configured strictly.
-    - **Singleline**: Max 1 attribute per line.
-    - **Multiline**: Max 1 attribute per line.
-- **Note**: Some legacy code may violate this. **New code must adhere to the linter.**
+- **One attribute per line.** Enforced by Prettier's `singleAttributePerLine: true` in
+  `.prettierrc.json`, not by a lint rule. Any tag with two or more attributes gets each on its own
+  line with the closing bracket on a line of its own; a single-attribute tag stays inline. Run
+  `npm run format` rather than wrapping by hand.
+- **Do not enforce this with `vue/max-attributes-per-line`** (or any other ESLint formatting rule).
+  `skipFormatting` exists to hand layout to Prettier; duplicating the rule in ESLint risks the two
+  tools drifting apart and undoing each other's output on every run.
 
 ```vue
 <!-- Good -->
 <VInput v-model="value" label="Name" :disabled="isDisabled" />
 
-<!-- Avoid (multiple attributes on single line) -->
-<VInput v-model="value" label="Name" />
+<!-- Single attribute stays inline -->
+<slot name="prepend" />
 ```
 
 ### Imports

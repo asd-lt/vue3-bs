@@ -52,7 +52,10 @@ import { VInput, VButton } from 'vue3-bs';
 </script>
 
 <template>
-    <VInput label="Email Address" placeholder="name@example.com" />
+    <VInput
+        label="Email Address"
+        placeholder="name@example.com"
+    />
 </template>
 ```
 

@@ -37,7 +37,11 @@ const parsedFieldClass = computed(() => {
 </script>
 <template>
     <div :class="parsedWrapperClass">
-        <label v-if="isLabelEnabled" class="form-label" :for="parsedId">
+        <label
+            v-if="isLabelEnabled"
+            class="form-label"
+            :for="parsedId"
+        >
             {{ parsedLabel }}
         </label>
         <textarea
@@ -51,6 +55,9 @@ const parsedFieldClass = computed(() => {
             @blur="$emit('blur')"
             @focus="$emit('focus')"
         />
-        <ErrorMessage ref="fieldError" :name="props.name" />
+        <ErrorMessage
+            ref="fieldError"
+            :name="props.name"
+        />
     </div>
 </template>

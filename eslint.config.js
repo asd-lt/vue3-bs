@@ -21,20 +21,8 @@ export default [
     },
     js.configs.recommended,
     ...pluginVue.configs['flat/essential'],
+    // No formatting rules here: `skipFormatting` hands layout to Prettier, and any rule that
+    // re-enables it (e.g. vue/max-attributes-per-line) is unsatisfiable — Prettier joins
+    // attributes that fit in printWidth, so lint --fix and format would undo each other.
     skipFormatting,
-    {
-        rules: {
-            'vue/max-attributes-per-line': [
-                'error',
-                {
-                    singleline: {
-                        max: 1,
-                    },
-                    multiline: {
-                        max: 1,
-                    },
-                },
-            ],
-        },
-    },
 ];

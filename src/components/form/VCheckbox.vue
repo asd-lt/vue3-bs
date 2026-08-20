@@ -15,13 +15,12 @@ const props = defineProps(
     }),
 );
 
-const {
-    parsedId,
-    isLabelEnabled,
-    parsedLabel,
-    fieldValue,
-    parsedName,
-} = baseComputed(props, formData, formProps, emit);
+const { parsedId, isLabelEnabled, parsedLabel, fieldValue, parsedName } = baseComputed(
+    props,
+    formData,
+    formProps,
+    emit,
+);
 
 const mainClass = computed(() => {
     const parsedMainClass = ['form-check'];
@@ -39,7 +38,7 @@ const mainClass = computed(() => {
             v-model="fieldValue"
             type="hidden"
             :name="parsedName"
-        >
+        />
         <input
             :id="parsedId"
             v-model="fieldValue"
@@ -49,7 +48,7 @@ const mainClass = computed(() => {
             :true-value="1"
             :false-value="0"
             :title="parsedLabel"
-        >
+        />
         <label
             v-if="isLabelEnabled"
             class="form-check-label"

@@ -99,7 +99,11 @@ function removeFile(index) {
 </script>
 <template>
     <div :class="parsedWrapperClass">
-        <label v-if="isLabelEnabled" class="form-label" :for="parsedId">
+        <label
+            v-if="isLabelEnabled"
+            class="form-label"
+            :for="parsedId"
+        >
             {{ parsedLabel }}
         </label>
         <div class="d-flex">
@@ -123,23 +127,37 @@ function removeFile(index) {
                 {{ parsedPlaceholder }}
             </button>
             <template v-else>
-                <slot :files="files" :remove-file="removeFile" :select-file="selectFile">
+                <slot
+                    :files="files"
+                    :remove-file="removeFile"
+                    :select-file="selectFile"
+                >
                     <div
                         v-for="(file, index) in files"
                         :key="`file-${index}-${file.name}`"
                         class="badge bg-secondary mr-1"
                     >
                         {{ file.name }}
-                        <span class="cursor-pointer" @click="removeFile(index)">
+                        <span
+                            class="cursor-pointer"
+                            @click="removeFile(index)"
+                        >
                             &nbsp;&times;
                         </span>
                     </div>
-                    <span v-if="props.multiple" class="badge bg-secondary" @click="selectFile">
+                    <span
+                        v-if="props.multiple"
+                        class="badge bg-secondary"
+                        @click="selectFile"
+                    >
                         +
                     </span>
                 </slot>
             </template>
         </div>
-        <ErrorMessage ref="fieldError" :name="props.name" />
+        <ErrorMessage
+            ref="fieldError"
+            :name="props.name"
+        />
     </div>
 </template>

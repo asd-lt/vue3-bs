@@ -41,7 +41,11 @@ const parsedFieldClass = computed(() => {
 </script>
 <template>
     <div :class="parsedWrapperClass">
-        <label v-if="isLabelEnabled" class="form-label" :for="parsedId">
+        <label
+            v-if="isLabelEnabled"
+            class="form-label"
+            :for="parsedId"
+        >
             {{ parsedLabel }}
         </label>
         <div class="input-group">
@@ -60,6 +64,9 @@ const parsedFieldClass = computed(() => {
             />
             <slot name="append" />
         </div>
-        <ErrorMessage ref="fieldError" :name="props.name" />
+        <ErrorMessage
+            ref="fieldError"
+            :name="props.name"
+        />
     </div>
 </template>

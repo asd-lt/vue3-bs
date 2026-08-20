@@ -1,9 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 
-const emit = defineEmits([
-    'selected',
-]);
+const emit = defineEmits(['selected']);
 
 const props = defineProps({
     date: {
@@ -17,9 +15,11 @@ const selectedDate = ref(props.date ? new Date(props.date) : new Date());
 const showingDate = ref(selectedDate.value);
 
 function isSameDay(date1, date2) {
-    return date1.getFullYear() === date2.getFullYear()
-        && date1.getMonth() === date2.getMonth()
-        && date1.getDate() === date2.getDate();
+    return (
+        date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate()
+    );
 }
 
 function generateWeeks(dateSelected = null, dateToShow = null) {
@@ -45,7 +45,9 @@ function generateWeeks(dateSelected = null, dateToShow = null) {
             week.push({
                 value: startDate.getDate().toString(),
                 date: new Date(startDate),
-                this_month: startDate.getFullYear() === dateToShowValue.getFullYear() && startDate.getMonth() === dateToShowValue.getMonth(),
+                this_month:
+                    startDate.getFullYear() === dateToShowValue.getFullYear() &&
+                    startDate.getMonth() === dateToShowValue.getMonth(),
                 this_day: isSameDay(startDate, selectDateValue),
             });
             startDate.setDate(startDate.getDate() + 1);
@@ -76,7 +78,6 @@ function selectDate(date) {
     selectedDate.value = date;
     emit('selected', date);
 }
-
 </script>
 <template>
     <table class="calendar">
@@ -89,7 +90,8 @@ function selectDate(date) {
                     &#x25C0;
                 </th>
                 <th colspan="5">
-                    {{ showingDate.getFullYear() }} - {{ ('0' + (showingDate.getMonth() + 1)).slice(-2) }}
+                    {{ showingDate.getFullYear() }} -
+                    {{ ('0' + (showingDate.getMonth() + 1)).slice(-2) }}
                 </th>
                 <th
                     class="next-month"
@@ -122,7 +124,8 @@ function selectDate(date) {
     min-width: 200px;
     width: 100%;
 
-    td, th {
+    td,
+    th {
         text-align: center;
         width: 30px;
         height: 30px;
@@ -172,5 +175,4 @@ function selectDate(date) {
         font-size: 12px;
     }
 }
-
 </style>

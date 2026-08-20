@@ -120,7 +120,7 @@ function setErrors(errors) {
 function setError(field, errorMessage) {
     if (field) {
         if (!formErrors.value.errors) {
-            formErrors.value = { errors: {}};
+            formErrors.value = { errors: {} };
         }
 
         if (errorMessage) {
@@ -183,7 +183,15 @@ defineExpose({
 });
 </script>
 <template>
-    <form ref="refForm" :class="formClass" :action="props.action" @submit="onFormSubmit">
-        <slot :submit-form="onFormSubmit" :form-data="formData" />
+    <form
+        ref="refForm"
+        :class="formClass"
+        :action="props.action"
+        @submit="onFormSubmit"
+    >
+        <slot
+            :submit-form="onFormSubmit"
+            :form-data="formData"
+        />
     </form>
 </template>

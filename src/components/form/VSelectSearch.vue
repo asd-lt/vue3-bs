@@ -414,7 +414,10 @@ defineExpose({
 });
 </script>
 <template>
-    <div :class="parsedWrapperClass" class="position-relative">
+    <div
+        :class="parsedWrapperClass"
+        class="position-relative"
+    >
         <!--
             A multiple select holds an array, and a single input would submit it as one
             comma-joined string, so each value gets its own indexed input. VForm expands those
@@ -431,11 +434,25 @@ defineExpose({
                 :value="value"
             />
         </template>
-        <input v-else :id="parsedId" v-model="fieldValue" type="hidden" :name="parsedName" />
-        <label v-if="isLabelEnabled" class="form-label" :for="parsedId">
+        <input
+            v-else
+            :id="parsedId"
+            v-model="fieldValue"
+            type="hidden"
+            :name="parsedName"
+        />
+        <label
+            v-if="isLabelEnabled"
+            class="form-label"
+            :for="parsedId"
+        >
             {{ parsedLabel }}
         </label>
-        <div ref="refSearchPlaceholder" :class="parsedFieldClass" @click="toggleSearch">
+        <div
+            ref="refSearchPlaceholder"
+            :class="parsedFieldClass"
+            @click="toggleSearch"
+        >
             <slot
                 name="selected-item"
                 :field-value="fieldValue"
@@ -449,7 +466,10 @@ defineExpose({
                         class="badge bg-dark me-1"
                     >
                         {{ item[props.keyName] }}
-                        <span class="px-1 ms-1 cursor-pointer" @click="selectItem(item)">
+                        <span
+                            class="px-1 ms-1 cursor-pointer"
+                            @click="selectItem(item)"
+                        >
                             &times;
                         </span>
                     </span>
@@ -508,7 +528,10 @@ defineExpose({
             </ul>
         </div>
 
-        <ErrorMessage ref="fieldError" :name="props.name" />
+        <ErrorMessage
+            ref="fieldError"
+            :name="props.name"
+        />
     </div>
 </template>
 <style lang="scss" scoped>
