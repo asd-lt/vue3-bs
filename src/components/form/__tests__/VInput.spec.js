@@ -34,4 +34,22 @@ describe('VInput', () => {
         expect(wrapper.emitted('update:modelValue')).toBeTruthy();
         expect(wrapper.emitted('update:modelValue')[0]).toEqual(['new value']);
     });
+
+    it('does not fall back to the value prop when modelValue is empty', () => {
+        // Regression: `modelValue || value` used to resurrect the default whenever the
+        // user cleared the field, since '' is falsy.
+        const wrapper = mount(VInput, {
+            props: { name: 'x', modelValue: '', value: 'DEFAULT' },
+        });
+
+        expect(wrapper.find('input').element.value).toBe('');
+    });
+
+    it('falls back to the value prop only when modelValue is null', () => {
+        const wrapper = mount(VInput, {
+            props: { name: 'x', modelValue: null, value: 'DEFAULT' },
+        });
+
+        expect(wrapper.find('input').element.value).toBe('DEFAULT');
+    });
 });

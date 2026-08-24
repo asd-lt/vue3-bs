@@ -55,8 +55,8 @@ const formErrors = reactive({});
 provide('form-errors', formErrors);
 
 const formHasError = computed(() => {
-    return (
-        formErrors.value && formErrors.value.errors && Object.keys(formErrors.value.errors).length
+    return Boolean(
+        formErrors.value && formErrors.value.errors && Object.keys(formErrors.value.errors).length,
     );
 });
 
@@ -93,7 +93,12 @@ function prepareSubmitData() {
 
     if (props.additionalFields) {
         props.additionalFields.forEach((field) => {
-            submitData.append(field, get(formData.value, field));
+            const value = get(formData.value, field);
+
+            // FormData.append stringifies, so a missing field would submit as "undefined".
+            if (value !== undefined && value !== null) {
+                submitData.append(field, value);
+            }
         });
     }
 
@@ -119,7 +124,7 @@ function setErrors(errors) {
 
 function setError(field, errorMessage) {
     if (field) {
-        if (!formErrors.value.errors) {
+        if (!formErrors.value || !formErrors.value.errors) {
             formErrors.value = { errors: {} };
         }
 

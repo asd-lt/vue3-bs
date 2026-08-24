@@ -1,7 +1,9 @@
 <script setup>
-import { inject, computed } from 'vue';
+import { inject, computed, ref } from 'vue';
+import ErrorMessage from './ErrorMessage.vue';
 import { baseComputed, baseProps } from './base-input';
 
+const fieldError = ref(null);
 const formData = inject('form-data');
 const formProps = inject('form-props');
 const emit = defineEmits(['update:modelValue', 'change']);
@@ -11,6 +13,12 @@ const props = defineProps(
         switch: {
             type: Boolean,
             default: false,
+        },
+        trueValue: {
+            default: 1,
+        },
+        falseValue: {
+            default: 0,
         },
     }),
 );
@@ -31,6 +39,16 @@ const mainClass = computed(() => {
 
     return parsedMainClass;
 });
+
+const parsedFieldClass = computed(() => {
+    const fieldClass = ['form-check-input'];
+
+    if (fieldError.value && fieldError.value.hasError) {
+        fieldClass.push('is-invalid');
+    }
+
+    return fieldClass;
+});
 </script>
 <template>
     <div :class="mainClass">
@@ -42,11 +60,11 @@ const mainClass = computed(() => {
         <input
             :id="parsedId"
             v-model="fieldValue"
-            class="form-check-input"
+            :class="parsedFieldClass"
             type="checkbox"
             :disabled="props.disabled"
-            :true-value="1"
-            :false-value="0"
+            :true-value="props.trueValue"
+            :false-value="props.falseValue"
             :title="parsedLabel"
         />
         <label
@@ -58,5 +76,9 @@ const mainClass = computed(() => {
                 {{ parsedLabel }}
             </slot>
         </label>
+        <ErrorMessage
+            ref="fieldError"
+            :name="props.name"
+        />
     </div>
 </template>

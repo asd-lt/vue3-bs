@@ -63,7 +63,8 @@ export function baseComputed(props, formData, formProps, emit) {
                 return get(formData.value, props.name, props.value);
             }
 
-            return props.modelValue || props.value;
+            // Only null/undefined falls back to `value`; '' / 0 / false are real user input.
+            return props.modelValue ?? props.value;
         },
         // setter
         set(value) {
@@ -79,16 +80,15 @@ export function baseComputed(props, formData, formProps, emit) {
     });
 
     const parsedName = computed(() => {
-        if (!formProps || !formProps.value || !formProps.value.enctype) {
+        // VForm provides its raw props object, not a ref, so read enctype directly.
+        if (!formProps || !formProps.enctype) {
             return props.name;
         }
 
         const parts = props.name.split('.');
         let fieldName = parts[0];
-        Object.keys(parts).forEach((index) => {
-            if (index > 0) {
-                fieldName += `[${parts[index]}]`;
-            }
+        parts.slice(1).forEach((part) => {
+            fieldName += `[${part}]`;
         });
 
         return fieldName;
