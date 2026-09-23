@@ -146,6 +146,12 @@ const fieldValueList = computed(() => {
     return Array.isArray(fieldValue.value) ? fieldValue.value : [];
 });
 
+// PHP turns a dot in a multipart field name into an underscore, so an enctype form — whose
+// FormData reaches the server untouched — has to bracket the index like the rest of the path.
+function indexedName(index) {
+    return formProps?.enctype ? `${parsedName.value}[${index}]` : `${parsedName.value}.${index}`;
+}
+
 const isCreateVisible = computed(() => {
     if (props.create === false) {
         return false;
@@ -420,9 +426,8 @@ defineExpose({
     >
         <!--
             A multiple select holds an array, and a single input would submit it as one
-            comma-joined string, so each value gets its own indexed input. VForm expands those
-            names back into an array. Nothing is submitted while the selection is empty, which
-            is what a native multiple select does too.
+            comma-joined string, so each value gets its own indexed input. Nothing is submitted
+            while the selection is empty, which is what a native multiple select does too.
         -->
         <template v-if="props.multiple">
             <input
@@ -430,7 +435,7 @@ defineExpose({
                 :id="index === 0 ? parsedId : null"
                 :key="`${parsedName}-${index}-${value}`"
                 type="hidden"
-                :name="`${parsedName}.${index}`"
+                :name="indexedName(index)"
                 :value="value"
             />
         </template>
