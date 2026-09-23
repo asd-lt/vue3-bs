@@ -6,6 +6,7 @@ import VInput from '../VInput.vue';
 import VTextarea from '../VTextarea.vue';
 import VCheckbox from '../VCheckbox.vue';
 import VSelectDate from '../VSelectDate.vue';
+import VSelectSearch from '../VSelectSearch.vue';
 
 global.axios = { post: vi.fn().mockResolvedValue({ data: {} }) };
 
@@ -149,6 +150,52 @@ describe('fields inside a VForm', () => {
             );
 
             expect(wrapper.find('input').attributes('name')).toBe('user.address.city');
+        });
+
+        it('brackets the index of a multiple VSelectSearch when the form has an enctype', () => {
+            const wrapper = mount(VForm, {
+                props: {
+                    modelValue: reactive({ tags: [1, 2] }),
+                    enctype: 'multipart/form-data',
+                },
+                slots: {
+                    default: '<VSelectSearch name="tags" multiple :options="[]" />',
+                },
+                global: { components: { VSelectSearch } },
+            });
+
+            const inputs = wrapper.findAll('input[type="hidden"]');
+            expect(inputs.map((input) => input.attributes('name'))).toEqual(['tags[0]', 'tags[1]']);
+        });
+
+        it('brackets a nested multiple VSelectSearch the whole way down', () => {
+            const wrapper = mount(VForm, {
+                props: {
+                    modelValue: reactive({ items: [{ tags: [1, 2] }] }),
+                    enctype: 'multipart/form-data',
+                },
+                slots: {
+                    default: '<VSelectSearch name="items.0.tags" multiple :options="[]" />',
+                },
+                global: { components: { VSelectSearch } },
+            });
+
+            const inputs = wrapper.findAll('input[type="hidden"]');
+            expect(inputs.map((input) => input.attributes('name'))).toEqual([
+                'items[0][tags][0]',
+                'items[0][tags][1]',
+            ]);
+        });
+
+        it('keeps dotted indexes for a multiple VSelectSearch without an enctype', () => {
+            const wrapper = mountInForm(
+                '<VSelectSearch name="tags" multiple :options="[]" />',
+                reactive({ tags: [1, 2] }),
+                { VSelectSearch },
+            );
+
+            const inputs = wrapper.findAll('input[type="hidden"]');
+            expect(inputs.map((input) => input.attributes('name'))).toEqual(['tags.0', 'tags.1']);
         });
     });
 

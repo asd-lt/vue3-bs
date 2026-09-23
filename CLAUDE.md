@@ -66,8 +66,10 @@ the control when that ref reports `hasError`.
 input alongside their visible controls. `prepareSubmitData()` appends `_method` and
 `additionalFields` (default `['id']`), then either returns the `FormData` as-is (when `enctype` is
 set) or rebuilds a nested JSON object by running each entry name back through `set()`. That's why a
-`multiple` `VSelectSearch` renders one hidden input per value with `name="field.0"`, `field.1`, …
-— the dot path is what expands it back into an array.
+`multiple` `VSelectSearch` renders one hidden input per value, indexed the way the receiving parser
+expects: `field.0`, `field.1`, … without an `enctype`, where `set()` expands the dot path back into
+an array, and `field[0]`, `field[1]`, … with one, where the raw `FormData` reaches the server and a
+dot would be mangled.
 
 `submitForm()` calls a **global `axios`** (declared as a readonly global in `eslint.config.js`, not
 imported or in `package.json`); consuming apps must supply it. `VSelectSearch`'s remote search does
