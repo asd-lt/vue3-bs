@@ -177,4 +177,49 @@ describe('VSelectSearch', () => {
             expect(wrapper.find('.list-group-item-create').exists()).toBe(false);
         });
     });
+
+    describe('clearable', () => {
+        const options = [{ id: 1, name: 'Item 1' }];
+
+        it('offers no clear button unless asked to', () => {
+            const wrapper = mount(VSelectSearch, {
+                props: { name: 'test-select', options, modelValue: 1 },
+            });
+
+            expect(wrapper.find('.form-select-clear').exists()).toBe(false);
+        });
+
+        it('offers no clear button while the field is empty', () => {
+            const wrapper = mount(VSelectSearch, {
+                props: { name: 'test-select', options, clearable: true },
+            });
+
+            expect(wrapper.find('.form-select-clear').exists()).toBe(false);
+        });
+
+        it('empties the value without opening the search', async () => {
+            const formData = ref({ item: 1 });
+            const wrapper = mount(VSelectSearch, {
+                props: { name: 'item', options, clearable: true },
+                global: { provide: { 'form-data': formData } },
+            });
+
+            await wrapper.find('.form-select-clear').trigger('click');
+
+            expect(formData.value.item ?? null).toBeNull();
+            expect(wrapper.find('.form-select').text()).not.toContain('Item 1');
+            expect(wrapper.find('.search-block').classes()).not.toContain('search-block--visible');
+        });
+
+        it('empties every value of a multiple select', async () => {
+            const { wrapper, formData } = mountMultiple({ options, clearable: true });
+            formData.value.tags = [1];
+            await wrapper.vm.$nextTick();
+
+            await wrapper.find('.form-select-clear').trigger('click');
+
+            expect(formData.value.tags).toEqual([]);
+            expect(wrapper.findAll('input[type="hidden"]').length).toBe(0);
+        });
+    });
 });

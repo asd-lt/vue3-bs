@@ -95,6 +95,7 @@ Advanced select component with search, remote data, and multi-select capabilitie
 | `multiple`  | Boolean | `false`  | Allow multiple selections                    |
 | `url`       | String  | `null`   | API URL for remote searching                 |
 | `no-search` | Boolean | `false`  | Hide search input (act like standard select) |
+| `clearable` | Boolean | `false`  | Show a `×` on hover that empties the value   |
 
 ### Example
 
@@ -125,10 +126,11 @@ Date picker component with a popup calendar.
 
 ### Props
 
-| Prop    | Type   | Default  | Description              |
-| ------- | ------ | -------- | ------------------------ |
-| `name`  | String | required | Key in `formData` object |
-| `label` | String | `null`   | Label text               |
+| Prop        | Type    | Default  | Description                                |
+| ----------- | ------- | -------- | ------------------------------------------ |
+| `name`      | String  | required | Key in `formData` object                   |
+| `label`     | String  | `null`   | Label text                                 |
+| `clearable` | Boolean | `false`  | Show a `×` on hover that empties the value |
 
 ### Example
 
@@ -166,10 +168,11 @@ Textarea component.
 
 ### Props
 
-| Prop    | Type   | Default  | Description              |
-| ------- | ------ | -------- | ------------------------ |
-| `name`  | String | required | Key in `formData` object |
-| `label` | String | `null`   | Label text               |
+| Prop        | Type    | Default  | Description                                |
+| ----------- | ------- | -------- | ------------------------------------------ |
+| `name`      | String  | required | Key in `formData` object                   |
+| `label`     | String  | `null`   | Label text                                 |
+| `clearable` | Boolean | `false`  | Show a `×` on hover that empties the value |
 | `rows`  | String | `null`   | Number of rows           |
 
 ### Example
