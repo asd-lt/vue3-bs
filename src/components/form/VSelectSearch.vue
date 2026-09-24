@@ -3,6 +3,7 @@ import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import vClickOutside from '../../directives/click-outside';
 import vScrollEnd from '../../directives/scroll-end';
 import ErrorMessage from './ErrorMessage.vue';
+import VClearButton from './_VClearButton.vue';
 import { baseProps, baseComputed } from './base-input';
 
 const refSearchView = ref(null);
@@ -59,6 +60,10 @@ const props = defineProps(
             default: null,
             type: [Function],
         },
+        clearable: {
+            default: false,
+            type: [Boolean],
+        },
     }),
 );
 
@@ -80,6 +85,10 @@ const isFieldValueEmpty = computed(() => {
     return fieldValue.value === null || fieldValue.value === undefined || fieldValue.value === '';
 });
 
+const isClearVisible = computed(() => {
+    return props.clearable && !isFieldValueEmpty.value;
+});
+
 const isSearchInputAvailable = computed(() => {
     return !props.noSearch;
 });
@@ -93,6 +102,10 @@ const parsedFieldClass = computed(() => {
 
     if (isFieldValueEmpty.value) {
         fieldClass.push('text-placeholder');
+    }
+
+    if (isClearVisible.value) {
+        fieldClass.push('form-select--clearable');
     }
 
     return fieldClass;
@@ -221,6 +234,12 @@ function queryResults(query = null) {
 function hideSearch() {
     isSearchBlockVisible.value = false;
     searchString.value = null;
+}
+
+// The watcher on `fieldValue` resets `selectedItem` to match.
+function clearValue() {
+    fieldValue.value = props.multiple ? [] : null;
+    hideSearch();
 }
 
 function isSelected(item) {
@@ -483,6 +502,10 @@ defineExpose({
                     {{ parsedValue }}
                 </template>
             </slot>
+            <VClearButton
+                v-if="isClearVisible"
+                @clear="clearValue"
+            />
         </div>
         <div
             ref="refSearchView"

@@ -35,4 +35,35 @@ describe('VSelectDate', () => {
         await placeholder.trigger('click');
         expect(calendarBlock.classes()).not.toContain('calendar-block--visible');
     });
+
+    describe('clearable', () => {
+        it('offers no clear button unless asked to', () => {
+            const wrapper = mount(VSelectDate, {
+                props: { name: 'test-date', modelValue: '2026-09-24' },
+            });
+
+            expect(wrapper.find('.form-select-clear').exists()).toBe(false);
+        });
+
+        it('offers no clear button while the field is empty', () => {
+            const wrapper = mount(VSelectDate, {
+                props: { name: 'test-date', clearable: true },
+            });
+
+            expect(wrapper.find('.form-select-clear').exists()).toBe(false);
+        });
+
+        it('empties the value without opening the calendar', async () => {
+            const wrapper = mount(VSelectDate, {
+                props: { name: 'test-date', clearable: true, modelValue: '2026-09-24' },
+            });
+
+            await wrapper.find('.form-select-clear').trigger('click');
+
+            expect(wrapper.emitted('update:modelValue').at(-1)).toEqual([null]);
+            expect(wrapper.find('.calendar-block').classes()).not.toContain(
+                'calendar-block--visible',
+            );
+        });
+    });
 });

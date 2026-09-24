@@ -3,6 +3,7 @@ import { computed, inject, ref } from 'vue';
 import vClickOutside from '../../directives/click-outside';
 import ErrorMessage from './ErrorMessage.vue';
 import VCalendar from './_VCalendar.vue';
+import VClearButton from './_VClearButton.vue';
 import { baseProps, baseComputed } from './base-input';
 
 const isCalendarBlockVisible = ref(false);
@@ -13,7 +14,14 @@ const formData = inject('form-data');
 const formProps = inject('form-props');
 const emit = defineEmits(['update:modelValue', 'change']);
 
-const props = defineProps(baseProps());
+const props = defineProps(
+    baseProps({
+        clearable: {
+            default: false,
+            type: [Boolean],
+        },
+    }),
+);
 
 const {
     parsedId,
@@ -25,6 +33,10 @@ const {
     parsedWrapperClass,
 } = baseComputed(props, formData, formProps, emit);
 
+const isClearVisible = computed(() => {
+    return props.clearable && !!fieldValue.value;
+});
+
 const parsedFieldClass = computed(() => {
     const fieldClass = ['form-select'];
 
@@ -34,6 +46,10 @@ const parsedFieldClass = computed(() => {
 
     if (!fieldValue.value) {
         fieldClass.push('text-placeholder');
+    }
+
+    if (isClearVisible.value) {
+        fieldClass.push('form-select--clearable');
     }
 
     return fieldClass;
@@ -78,6 +94,11 @@ function formatDate(date) {
     });
 }
 
+function clearValue() {
+    fieldValue.value = null;
+    hideCalendar();
+}
+
 function onDateSelect(date) {
     fieldValue.value = formatDate(date);
     hideCalendar();
@@ -104,6 +125,10 @@ function onDateSelect(date) {
             @click="toggleCalendar"
         >
             {{ parsedValue || '&nbsp;' }}
+            <VClearButton
+                v-if="isClearVisible"
+                @clear="clearValue"
+            />
         </div>
         <div
             v-click-outside="clickOutside"
