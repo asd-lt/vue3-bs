@@ -173,7 +173,7 @@ Textarea component.
 | `name`      | String  | required | Key in `formData` object                   |
 | `label`     | String  | `null`   | Label text                                 |
 | `clearable` | Boolean | `false`  | Show a `×` on hover that empties the value |
-| `rows`  | String | `null`   | Number of rows           |
+| `rows`      | String  | `null`   | Number of rows                             |
 
 ### Example
 
@@ -199,4 +199,62 @@ File input component with preview support.
 
 ```vue
 <VFile name="avatar" label="Upload Avatar" />
+```
+
+---
+
+## VTabs / VTab
+
+Splits long content — a long form in particular — into Bootstrap tab panes. Needs no Bootstrap JS:
+`VTabs` renders the nav and owns which pane is active, `VTab` renders one pane.
+
+An inactive pane keeps rendering and only loses its `active` class, so a field inside it still
+posts its value on submit and still shows the message `VForm` reports for it.
+
+### VTabs props
+
+| Prop          | Type   | Default | Description                                          |
+| ------------- | ------ | ------- | ---------------------------------------------------- |
+| `model-value` | String | `null`  | Label of the active tab; falls back to the first tab |
+
+Emits `update:modelValue` with the active label, so `v-model` both drives the tabs and follows
+them. A label is what identifies a tab, so labels must be unique within one `VTabs`. A label
+naming no pane is kept rather than discarded, so a pane that mounts late — behind a `v-if`, or
+after a fetch — still opens on the tab the consumer asked for.
+
+### VTab props
+
+| Prop    | Type   | Default  | Description                     |
+| ------- | ------ | -------- | ------------------------------- |
+| `label` | String | required | Nav link text, and the tab's id |
+
+### Example
+
+```vue
+<script setup>
+import { reactive, ref } from 'vue';
+const formData = reactive({ email: '', password: '' });
+const activeTab = ref('Security');
+</script>
+
+<template>
+    <VForm :model-value="formData">
+        <VTabs v-model="activeTab">
+            <VTab label="Account">
+                <VInput
+                    name="email"
+                    label="Email"
+                />
+            </VTab>
+            <VTab label="Security">
+                <VInput
+                    name="password"
+                    label="Password"
+                    type="password"
+                />
+            </VTab>
+        </VTabs>
+        <button type="submit">Submit</button>
+    </VForm>
+</template>
 ```
