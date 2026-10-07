@@ -1,7 +1,8 @@
 <script setup>
-import { computed, inject } from 'vue';
+import { computed, inject, onMounted, onUnmounted } from 'vue';
 
 const formErrors = inject('form-errors', {});
+const tabErrors = inject('tab-errors', null);
 
 const props = defineProps({
     name: {
@@ -17,6 +18,13 @@ const hasError = computed(() => {
         formErrors.value.errors[props.name].length
     );
 });
+
+// A tab pane can be closed when the form reports an error, hiding this message, so the pane
+// collects its fields' error state to mark its nav link instead.
+if (tabErrors) {
+    onMounted(() => tabErrors.registerField(hasError));
+    onUnmounted(() => tabErrors.unregisterField(hasError));
+}
 
 const parsedErrorMessage = computed(() => {
     return formErrors?.value?.errors[props.name][0];

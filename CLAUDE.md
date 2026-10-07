@@ -78,6 +78,21 @@ populates `form-errors`, which `ErrorMessage` renders. `VForm` also exposes `set
 `setErrors`, `setError(field, message)`, `submitForm`, `formData`, and `formHasError` via
 `defineExpose`.
 
+### Tabs
+
+`src/components/tabs/` holds the only non-form components. `VTabs` renders the `nav nav-tabs` list
+and the `tab-content` wrapper, `VTab` one `tab-pane`; a pane registers itself (its props, its
+element, and a live `errored`) with the `tabs-state` key `VTabs` provides. **A pane hides, it never
+unmounts** — it only loses `active` — so a field behind a closed tab still posts through
+`FormData(formEl)` and still renders what `form-errors` reports on it.
+
+That hiding is also why a fourth injection key crosses from tabs into the form system:
+`VTab` provides `tab-errors`, and `ErrorMessage` — which every field renders — registers its
+`hasError` computed with it on mount and unregisters on unmount. A pane is therefore "errored" when
+any `ErrorMessage` inside it is, which is what marks its nav link `text-danger`; a nested `VTab`
+forwards its own state the same way, so the outer link marks too. A control that renders no
+`ErrorMessage` does not take part.
+
 ### Other pieces
 
 - `src/directives/` — `click-outside` and `scroll-end`, imported locally as `vClickOutside` /

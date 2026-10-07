@@ -211,6 +211,17 @@ Splits long content — a long form in particular — into Bootstrap tab panes. 
 An inactive pane keeps rendering and only loses its `active` class, so a field inside it still
 posts its value on submit and still shows the message `VForm` reports for it.
 
+Because a closed pane cannot show that message, its nav link reports for it: a link whose pane
+holds an errored field gets `text-danger` until the errors clear, so a failed submit points at the
+tab to open. A nested `VTabs` marks the outer link as well, since the error is behind both. This
+needs a `VForm` above the `VTabs`; without one there are no errors to report.
+
+A pane learns about an error from the `ErrorMessage` each field renders, not from the inputs in its
+markup, so a field posting under a name of its own — a `multiple` `VSelectSearch` posts `tags.0`,
+`tags.1` under an error reported as `tags` — still marks its tab. A hand-rolled control that
+renders no `ErrorMessage` takes no part in the marking. The mark is a colour alone; style
+`.nav-link.text-danger` if you need a cue that does not rely on it.
+
 ### VTabs props
 
 | Prop          | Type   | Default | Description                                          |

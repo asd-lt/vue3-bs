@@ -5,6 +5,7 @@ import VTabs from '../VTabs.vue';
 import VTab from '../VTab.vue';
 import VForm from '../../form/VForm.vue';
 import VInput from '../../form/VInput.vue';
+import VSelectSearch from '../../form/VSelectSearch.vue';
 
 const TWO_TABS = '<VTab label="One">first</VTab><VTab label="Two">second</VTab>';
 
@@ -33,16 +34,30 @@ async function mountTabsInHost(template, setup = () => ({})) {
     return wrapper;
 }
 
-async function mountTabsInForm(props) {
+const TWO_FIELD_TABS = `<VTabs>
+    <VTab label="Account"><VInput name="email" /></VTab>
+    <VTab label="Security"><VInput name="password" /></VTab>
+</VTabs>`;
+
+async function mountTabsInForm(props, template = TWO_FIELD_TABS) {
     const wrapper = mount(VForm, {
         props,
-        slots: {
-            default: `<VTabs>
-                <VTab label="Account"><VInput name="email" /></VTab>
-                <VTab label="Security"><VInput name="password" /></VTab>
-            </VTabs>`,
-        },
-        global: { components: { VTabs, VTab, VInput } },
+        slots: { default: template },
+        global: { components: { VTabs, VTab, VInput, VSelectSearch } },
+    });
+
+    await flushPromises();
+
+    return wrapper;
+}
+
+// A pane or field put behind a v-if needs a host component to own the flag, so the VForm goes
+// in the host's template and is reached through findComponent.
+async function mountTabsInFormHost(template, setup) {
+    const wrapper = mount({
+        components: { VForm, VTabs, VTab, VInput },
+        setup,
+        template,
     });
 
     await flushPromises();
@@ -56,6 +71,13 @@ function navLabels(wrapper) {
 
 function activePaneText(wrapper) {
     return wrapper.find('.tab-pane.active').text();
+}
+
+function erroredLabels(wrapper) {
+    return wrapper
+        .findAll('.nav-tabs .nav-link')
+        .filter((link) => link.classes().includes('text-danger'))
+        .map((link) => link.text());
 }
 
 describe('VTabs', () => {
@@ -234,5 +256,216 @@ describe('VTabs inside a VForm', () => {
         expect(inactivePane.classes()).not.toContain('active');
         expect(inactivePane.find('.invalid-feedback').text()).toBe('Password is too short');
         expect(inactivePane.find('input[name="password"]').classes()).toContain('is-invalid');
+    });
+});
+
+describe('a tab holding an errored field', () => {
+    it('marks the nav link of the pane the error belongs to', async () => {
+        const wrapper = await mountTabsInForm({
+            modelValue: reactive({ email: '', password: '' }),
+        });
+
+        wrapper.vm.setErrors({ password: ['Password is too short'] });
+        await flushPromises();
+
+        expect(erroredLabels(wrapper)).toEqual(['Security']);
+    });
+
+    it('marks the nav link of the pane the user is already looking at', async () => {
+        const wrapper = await mountTabsInForm({
+            modelValue: reactive({ email: '', password: '' }),
+        });
+
+        wrapper.vm.setErrors({ email: ['Email is already taken'] });
+        await flushPromises();
+
+        expect(erroredLabels(wrapper)).toEqual(['Account']);
+    });
+
+    it('marks every pane an error landed in', async () => {
+        const wrapper = await mountTabsInForm({
+            modelValue: reactive({ email: '', password: '' }),
+        });
+
+        wrapper.vm.setErrors({
+            email: ['Email is already taken'],
+            password: ['Password is too short'],
+        });
+        await flushPromises();
+
+        expect(erroredLabels(wrapper)).toEqual(['Account', 'Security']);
+    });
+
+    it('marks a pane whose errored field is named by a dot path', async () => {
+        const wrapper = await mountTabsInForm(
+            { modelValue: reactive({ user: { name: '' } }) },
+            `<VTabs>
+                <VTab label="Account"><VInput name="email" /></VTab>
+                <VTab label="Profile"><VInput name="user.name" /></VTab>
+            </VTabs>`,
+        );
+
+        wrapper.vm.setErrors({ 'user.name': ['Name is required'] });
+        await flushPromises();
+
+        expect(erroredLabels(wrapper)).toEqual(['Profile']);
+    });
+
+    it('drops the mark once the errors clear', async () => {
+        const wrapper = await mountTabsInForm({
+            modelValue: reactive({ email: '', password: '' }),
+        });
+
+        wrapper.vm.setErrors({ password: ['Password is too short'] });
+        await flushPromises();
+
+        wrapper.vm.setErrors(null);
+        await flushPromises();
+
+        expect(erroredLabels(wrapper)).toEqual([]);
+    });
+
+    it('marks a pane by the field name the error carries, not by the inputs it renders', async () => {
+        const wrapper = await mountTabsInForm(
+            { modelValue: reactive({ email: '', tags: ['vue'] }) },
+            `<VTabs>
+                <VTab label="Account"><VInput name="email" /></VTab>
+                <VTab label="Skills"><VSelectSearch name="tags" multiple /></VTab>
+            </VTabs>`,
+        );
+        // A multiple VSelectSearch posts one indexed input per value, so no element carries the
+        // bare name the error arrives under.
+        expect(wrapper.find('input[name="tags.0"]').exists()).toBe(true);
+        expect(wrapper.find('input[name="tags"]').exists()).toBe(false);
+
+        wrapper.vm.setErrors({ tags: ['Pick at least one skill'] });
+        await flushPromises();
+
+        expect(erroredLabels(wrapper)).toEqual(['Skills']);
+    });
+
+    it('marks the outer nav link too when a nested pane holds the error', async () => {
+        const wrapper = await mountTabsInForm(
+            { modelValue: reactive({ password: '' }) },
+            `<VTabs>
+                <VTab label="Outer">
+                    <VTabs>
+                        <VTab label="Inner"><VInput name="password" /></VTab>
+                    </VTabs>
+                </VTab>
+            </VTabs>`,
+        );
+
+        wrapper.vm.setErrors({ password: ['Password is too short'] });
+        await flushPromises();
+
+        expect(erroredLabels(wrapper)).toEqual(['Outer', 'Inner']);
+    });
+
+    it('marks nothing when the errored field sits in no pane', async () => {
+        const wrapper = await mountTabsInForm({
+            modelValue: reactive({ email: '', password: '' }),
+        });
+
+        wrapper.vm.setErrors({ captcha: ['Prove you are human'] });
+        await flushPromises();
+
+        expect(erroredLabels(wrapper)).toEqual([]);
+    });
+
+    it('marks nothing with no VForm above it', async () => {
+        const wrapper = await mountTabs(TWO_TABS);
+
+        expect(erroredLabels(wrapper)).toEqual([]);
+    });
+});
+
+describe('a tab whose errored field comes or goes', () => {
+    it('marks a pane that mounts after the error arrived', async () => {
+        const model = reactive({ email: '', password: '' });
+        const showSecurity = ref(false);
+        const wrapper = await mountTabsInFormHost(
+            `<VForm :model-value="model">
+                <VTabs>
+                    <VTab label="Account"><VInput name="email" /></VTab>
+                    <VTab
+                        v-if="showSecurity"
+                        label="Security"
+                    >
+                        <VInput name="password" />
+                    </VTab>
+                </VTabs>
+            </VForm>`,
+            () => ({ model, showSecurity }),
+        );
+
+        wrapper.findComponent(VForm).vm.setErrors({ password: ['Password is too short'] });
+        await flushPromises();
+        expect(erroredLabels(wrapper)).toEqual([]);
+
+        showSecurity.value = true;
+        await flushPromises();
+
+        expect(erroredLabels(wrapper)).toEqual(['Security']);
+    });
+
+    it('drops the mark when the errored field leaves its pane', async () => {
+        const model = reactive({ email: '', password: '' });
+        const showPassword = ref(true);
+        const wrapper = await mountTabsInFormHost(
+            `<VForm :model-value="model">
+                <VTabs>
+                    <VTab label="Account"><VInput name="email" /></VTab>
+                    <VTab label="Security">
+                        <VInput
+                            v-if="showPassword"
+                            name="password"
+                        />
+                    </VTab>
+                </VTabs>
+            </VForm>`,
+            () => ({ model, showPassword }),
+        );
+
+        wrapper.findComponent(VForm).vm.setErrors({ password: ['Password is too short'] });
+        await flushPromises();
+        expect(erroredLabels(wrapper)).toEqual(['Security']);
+
+        showPassword.value = false;
+        await flushPromises();
+
+        expect(erroredLabels(wrapper)).toEqual([]);
+    });
+
+    it('drops the outer mark when the errored nested pane leaves', async () => {
+        const model = reactive({ password: '' });
+        const showInner = ref(true);
+        const wrapper = await mountTabsInFormHost(
+            `<VForm :model-value="model">
+                <VTabs>
+                    <VTab label="Outer">
+                        <VTabs>
+                            <VTab
+                                v-if="showInner"
+                                label="Inner"
+                            >
+                                <VInput name="password" />
+                            </VTab>
+                            <VTab label="Other">other</VTab>
+                        </VTabs>
+                    </VTab>
+                </VTabs>
+            </VForm>`,
+            () => ({ model, showInner }),
+        );
+
+        wrapper.findComponent(VForm).vm.setErrors({ password: ['Password is too short'] });
+        await flushPromises();
+        expect(erroredLabels(wrapper)).toEqual(['Outer', 'Inner']);
+
+        showInner.value = false;
+        await flushPromises();
+
+        expect(erroredLabels(wrapper)).toEqual([]);
     });
 });
