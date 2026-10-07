@@ -45,16 +45,17 @@ function isActive(label) {
     return label === activeLabel.value;
 }
 
-// A pane hands over its own props, so a label changed later renames its nav link, and its
-// element, so a pane re-added at runtime lands back in document order instead of at the end.
-function registerTab(tab, pane) {
+// A pane registers its own props, so a label changed later renames its nav link; its element,
+// so a pane re-added at runtime lands back in document order instead of at the end; and a live
+// `errored`, because a closed pane cannot show the message it holds and its link reports for it.
+function registerTab(entry) {
     const following = tabs.value.findIndex(
         (registered) =>
-            pane.compareDocumentPosition(registered.pane) & Node.DOCUMENT_POSITION_FOLLOWING,
+            entry.pane.compareDocumentPosition(registered.pane) & Node.DOCUMENT_POSITION_FOLLOWING,
     );
 
     const registered = [...tabs.value];
-    registered.splice(following === -1 ? registered.length : following, 0, { tab, pane });
+    registered.splice(following === -1 ? registered.length : following, 0, entry);
     tabs.value = registered;
 }
 
@@ -71,14 +72,14 @@ provide('tabs-state', { isActive, registerTab, unregisterTab });
             role="tablist"
         >
             <li
-                v-for="{ tab } in tabs"
+                v-for="{ tab, errored } in tabs"
                 :key="tab.label"
                 class="nav-item"
                 role="presentation"
             >
                 <button
                     class="nav-link"
-                    :class="{ active: isActive(tab.label) }"
+                    :class="{ active: isActive(tab.label), 'text-danger': errored }"
                     type="button"
                     role="tab"
                     :aria-selected="isActive(tab.label)"
