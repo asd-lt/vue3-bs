@@ -3,6 +3,8 @@ import { reactive, ref } from 'vue';
 
 const formRef = ref(null);
 
+const activeTab = ref('Access');
+
 const formData = reactive({
     email: '',
     password: '',
@@ -110,44 +112,59 @@ const clearErrors = () => {
                         />
                     </div>
 
-                    <div class="mb-3">
-                        <VSelectSearch
-                            name="role"
-                            label="Role (Single Select)"
-                            placeholder="Select a role"
-                            :options="roles"
-                            key-id="id"
-                            key-name="name"
-                        />
-                    </div>
+                    <VTabs
+                        v-model="activeTab"
+                        class="mb-3"
+                    >
+                        <VTab
+                            label="Access"
+                            class="pt-3"
+                        >
+                            <div class="mb-3">
+                                <VSelectSearch
+                                    name="role"
+                                    label="Role (Single Select)"
+                                    placeholder="Select a role"
+                                    :options="roles"
+                                    key-id="id"
+                                    key-name="name"
+                                />
+                            </div>
 
-                    <div class="mb-3">
-                        <VSelectSearch
-                            name="tags"
-                            label="Skills (Multi Select)"
-                            placeholder="Select skills"
-                            :options="availableTags"
-                            key-id="id"
-                            key-name="name"
-                            multiple
-                        />
-                    </div>
+                            <div class="mb-3">
+                                <VSelectSearch
+                                    name="tags"
+                                    label="Skills (Multi Select)"
+                                    placeholder="Select skills"
+                                    :options="availableTags"
+                                    key-id="id"
+                                    key-name="name"
+                                    multiple
+                                />
+                            </div>
+                        </VTab>
 
-                    <div class="mb-3">
-                        <VTextarea
-                            name="description"
-                            label="Bio"
-                            placeholder="Tell us about yourself"
-                            rows="3"
-                        />
-                    </div>
+                        <VTab
+                            label="Profile"
+                            class="pt-3"
+                        >
+                            <div class="mb-3">
+                                <VTextarea
+                                    name="description"
+                                    label="Bio"
+                                    placeholder="Tell us about yourself"
+                                    rows="3"
+                                />
+                            </div>
 
-                    <div class="mb-3">
-                        <VFile
-                            name="avatar"
-                            label="Avatar"
-                        />
-                    </div>
+                            <div class="mb-3">
+                                <VFile
+                                    name="avatar"
+                                    label="Avatar"
+                                />
+                            </div>
+                        </VTab>
+                    </VTabs>
 
                     <div class="mb-3">
                         <VCheckbox
@@ -185,6 +202,7 @@ const clearErrors = () => {
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Form Data State</h5>
+                <p class="text-muted mb-1">Active tab: {{ activeTab }}</p>
                 <pre>{{ formData }}</pre>
             </div>
         </div>
