@@ -2,6 +2,7 @@
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import vClickOutside from '../../directives/click-outside';
 import vScrollEnd from '../../directives/scroll-end';
+import { useFloatingBlock } from '../../composables/floating-block.js';
 import ErrorMessage from './ErrorMessage.vue';
 import VClearButton from './_VClearButton.vue';
 import { baseProps, baseComputed } from './base-input';
@@ -15,6 +16,14 @@ const searchResults = ref([]);
 const selectedItem = reactive({});
 const isLoading = ref(false);
 const nextUrl = ref(null);
+const searchBlockStyle = useFloatingBlock(
+    refSearchPlaceholder,
+    refSearchView,
+    isSearchBlockVisible,
+    {
+        matchWidth: true,
+    },
+);
 
 const emit = defineEmits(['update:modelValue', 'select', 'change']);
 
@@ -513,6 +522,7 @@ defineExpose({
             v-scroll-end="onScrollEnd"
             class="search-block shadow-sm"
             :class="{ 'search-block--visible': isSearchBlockVisible }"
+            :style="searchBlockStyle"
         >
             <ul class="list-group bg-light">
                 <li
@@ -564,8 +574,7 @@ defineExpose({
 </template>
 <style lang="scss" scoped>
 .search-block {
-    width: 100%;
-    position: absolute;
+    position: fixed;
     max-height: 200px;
     overflow-x: hidden;
     overflow-y: auto;

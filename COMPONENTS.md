@@ -84,6 +84,9 @@ Standard text input component (wraps `input.form-control`).
 
 Advanced select component with search, remote data, and multi-select capabilities.
 
+The results open fixed to the screen under the field, or above it when there is more room there, so
+a container clipping its overflow — a modal `<dialog>` among them — cannot cut them off.
+
 ### Props
 
 | Prop        | Type    | Default  | Description                                  |
@@ -122,7 +125,7 @@ const roles = [
 
 ## VSelectDate
 
-Date picker component with a popup calendar.
+Date picker component with a popup calendar, which opens the way the `VSelectSearch` results do.
 
 ### Props
 

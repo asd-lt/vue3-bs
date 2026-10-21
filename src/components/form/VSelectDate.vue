@@ -1,6 +1,7 @@
 <script setup>
 import { computed, inject, ref } from 'vue';
 import vClickOutside from '../../directives/click-outside';
+import { useFloatingBlock } from '../../composables/floating-block.js';
 import ErrorMessage from './ErrorMessage.vue';
 import VCalendar from './_VCalendar.vue';
 import VClearButton from './_VClearButton.vue';
@@ -8,6 +9,12 @@ import { baseProps, baseComputed } from './base-input';
 
 const isCalendarBlockVisible = ref(false);
 const refPlaceholder = ref(false);
+const refCalendarBlock = ref(null);
+const calendarBlockStyle = useFloatingBlock(
+    refPlaceholder,
+    refCalendarBlock,
+    isCalendarBlockVisible,
+);
 
 const fieldError = ref(null);
 const formData = inject('form-data');
@@ -131,9 +138,11 @@ function onDateSelect(date) {
             />
         </div>
         <div
+            ref="refCalendarBlock"
             v-click-outside="clickOutside"
             class="calendar-block shadow-sm"
             :class="{ 'calendar-block--visible': isCalendarBlockVisible }"
+            :style="calendarBlockStyle"
         >
             <VCalendar
                 :date="fieldValue"
@@ -149,7 +158,7 @@ function onDateSelect(date) {
 </template>
 <style lang="scss">
 .calendar-block {
-    position: absolute;
+    position: fixed;
     overflow-x: hidden;
     overflow-y: hidden;
     display: none;
