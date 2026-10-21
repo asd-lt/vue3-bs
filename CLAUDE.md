@@ -97,6 +97,11 @@ forwards its own state the same way, so the outer link marks too. A control that
 
 - `src/directives/` — `click-outside` and `scroll-end`, imported locally as `vClickOutside` /
   `vScrollEnd` by `VSelectSearch` and `VSelectDate`; not registered globally by the plugin.
+- `src/composables/floating-block.js` — `useFloatingBlock`, which pins the `VSelectSearch` results
+  and the `VSelectDate` calendar to their field with `position: fixed`, so an ancestor clipping
+  its overflow (a modal `<dialog>` does by default) cannot cut them off. Not a `Teleport`: moved
+  out of a modal dialog, the block would sit under the top layer and be inert. It opens above the
+  field when there is more room there, and follows it on any scroll or resize while open.
 - `VSelectSearch` (the largest component) handles static options, remote paginated search
   (Laravel-style `links.next` / `next_page_url`), multi-select badges, and an inline create row.
 - `_VCalendar.vue` — leading underscore marks it internal to `VSelectDate`; not exported.
